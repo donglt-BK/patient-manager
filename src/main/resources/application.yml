@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/patient_manager
+    username: dongltbk
+    password: donglt
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/db-changelog-master.xml
+    drop-first: false

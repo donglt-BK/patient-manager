@@ -1,0 +1,47 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="create_table_schedule" author="donglt">
+        <createTable tableName="schedule">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="created_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_by_user_id" type="int(11)"/>
+            <column name="created_by_user_id" type="int(11)"/>
+            <column name="is_deleted" type="boolean" defaultValueBoolean="false"/>
+
+            <column name="date" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="shift" type="varchar(20)"/>
+            <column name="doctor_id" type="int(11)"/>
+            <column name="department_id" type="int(11)"/>
+            <column name="limit" type="int(11)"/>
+        </createTable>
+
+        <createTable tableName="doctor_schedule">
+            <column name="doctor_id" type="int(11)"/>
+            <column name="schedule_id" type="int(11)"/>
+        </createTable>
+
+        <createTable tableName="schedule_change_request">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="created_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_by_user_id" type="varchar(50)"/>
+            <column name="created_by_user_id" type="varchar(50)"/>
+            <column name="is_deleted" type="boolean" defaultValueBoolean="false"/>
+
+            <column name="schedule_id" type="int(11)"/>
+            <column name="doctor_id" type="int(11)"/>
+            <column name="date" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="shift" type="varchar(20)"/>
+            <column name="resolve" type="boolean" defaultValueBoolean="false"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
