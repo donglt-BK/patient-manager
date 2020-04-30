@@ -24,12 +24,12 @@ public class AddressDto {
     public AddressDto(Address address) {
         country = address.getCountry().getName();
         countryId = address.getCountry().getId();
-        city = address.getCountry().getName();
-        cityId = address.getCountry().getId();
-        district = address.getCountry().getName();
-        districtId = address.getCountry().getId();
-        block = address.getCountry().getName();
-        blockId = address.getCountry().getId();
+        city = address.getCity().getName();
+        cityId = address.getCity().getId();
+        district = address.getDistrict().getName();
+        districtId = address.getDistrict().getId();
+        block = address.getBlock().getName();
+        blockId = address.getBlock().getId();
         specificAddress = address.getSpecificAddress();
     }
 }

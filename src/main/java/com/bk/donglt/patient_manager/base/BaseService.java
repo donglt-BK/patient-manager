@@ -2,6 +2,7 @@ package com.bk.donglt.patient_manager.base;
 
 import com.bk.donglt.patient_manager.config.sercurity.CurrentUserDetailsContainer;
 import com.bk.donglt.patient_manager.config.sercurity.CustomUserDetails;
+import com.bk.donglt.patient_manager.exception.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,43 +26,51 @@ public abstract class BaseService<E extends BaseEntity, R extends BaseRepository
         if (entity == null) {
             return null;
         }
-
-        preSave(entity);
-
+        setCreateUser(entity);
         return repository.save(entity);
     }
 
-    public List<E> saveList(List<E> entities) {
-        entities.forEach(this::preSave);
+    public List<E> save(List<E> entities) {
+        entities.forEach(this::setCreateUser);
         return repository.saveAll(entities);
     }
 
-    public void preSave(E entity) {
-        entity.setCreatedTime(new Date());
-        entity.setUpdatedTime(new Date());
-    }
-
     public E findById(Long id) {
-        return repository.findById(id).orElse(null);
+        return repository.findById(id).orElseThrow(() -> new BadRequestException("Id not found"));
     }
 
     public E update(E entity) {
         if (entity == null || entity.getId() == null) {
             return null;
         } else {
-            entity.setUpdatedTime(new Date());
+            setUpdateUser(entity);
             return repository.save(entity);
         }
     }
 
     public boolean delete(Long id) {
-        E entity = repository.findById(id).orElse(null);
+        E entity = findById(id);
         if (entity == null) {
             return false;
         } else {
-            repository.delete(entity);
+            setUpdateUser(entity);
+            entity.setDeleted(true);
+            update(entity);
             return true;
         }
     }
 
+    private void setCreateUser(E entity) {
+        Long updateUserId = getCurrentUser() == null ? null : getCurrentUser().getUser().getId();
+        entity.setCreatedByUserId(updateUserId);
+        entity.setUpdatedByUserId(updateUserId);
+        entity.setCreatedTime(new Date());
+        entity.setUpdatedTime(new Date());
+    }
+
+    private void setUpdateUser(E entity) {
+        Long updateUserId = getCurrentUser() == null ? null : getCurrentUser().getUser().getId();
+        entity.setUpdatedByUserId(updateUserId);
+        entity.setUpdatedTime(new Date());
+    }
 }

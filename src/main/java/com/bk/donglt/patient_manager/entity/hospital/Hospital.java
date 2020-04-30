@@ -1,7 +1,7 @@
 package com.bk.donglt.patient_manager.entity.hospital;
 
 import com.bk.donglt.patient_manager.base.BaseEntity;
-import com.bk.donglt.patient_manager.dto.HospitalDto;
+import com.bk.donglt.patient_manager.dto.hospital.HospitalDataDto;
 import com.bk.donglt.patient_manager.entity.User;
 import com.bk.donglt.patient_manager.entity.address.Address;
 import com.bk.donglt.patient_manager.entity.address.Location;
@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -24,31 +25,36 @@ public class Hospital extends BaseEntity {
     @Embedded
     private Location location;
 
+    @Column(name = "active")
     private Boolean isActive;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "hospital_manager",
             joinColumns = @JoinColumn(name = "hospital_id"),
             inverseJoinColumns = {@JoinColumn(name = "manager_id")}
     )
-    private List<User> managers;
+    private Set<User> managers;
 
     public boolean manageBy(User user) {
-        if (managers.size() == 1) return managers.get(0).getId().equals(user.getId());
+        if (managers.size() == 1) return managers.toArray(new User[1])[0].getId().equals(user.getId());
 
         return managers.stream().map(manager -> manager.getId().equals(user.getId())).reduce(Boolean::logicalOr).orElse(false);
     }
 
-    public void update(HospitalDto update) {
-        name = update.getName();
-        address = update.getAddress();
-        location = update.getLocation();
+    public void update(HospitalDataDto update) {
+        if (update.getName() != null) name = update.getName();
 
-        managers.addAll(update.getAddManagers());
+        if (location == null) location = new Location();
+        if (update.getLatitude() != null) location.setLatitude(update.getLatitude());
+        if (update.getLongitude() != null) location.setLongitude(update.getLongitude());
 
-        List<Long> removeManagerIds = update.getRemoveManagerIds();
-        if (removeManagerIds.size() == 0) return;
-        managers.removeIf(manager -> removeManagerIds.contains(manager.getId()));
+        if (update.getAddress() != null) address = update.getAddress();
+
+        if (update.getAddedManagers() != null) managers.addAll(update.getAddedManagers());
+
+        List<Long> removeManagerIds = update.getRemovedManagerIds();
+        if (removeManagerIds != null && removeManagerIds.size() != 0)
+            managers.removeIf(manager -> removeManagerIds.contains(manager.getId()));
     }
 }

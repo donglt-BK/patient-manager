@@ -1,9 +1,10 @@
 package com.bk.donglt.patient_manager.service.manager;
 
 import com.bk.donglt.patient_manager.base.BaseService;
-import com.bk.donglt.patient_manager.dto.HospitalDto;
+import com.bk.donglt.patient_manager.dto.hospital.HospitalDataDto;
+import com.bk.donglt.patient_manager.dto.hospital.HospitalDetailDto;
+import com.bk.donglt.patient_manager.dto.hospital.HospitalDto;
 import com.bk.donglt.patient_manager.entity.hospital.Hospital;
-import com.bk.donglt.patient_manager.exception.BadRequestException;
 import com.bk.donglt.patient_manager.repository.HospitalRepository;
 import com.bk.donglt.patient_manager.service.UserService;
 import com.bk.donglt.patient_manager.service.address.AddressService;
@@ -15,47 +16,43 @@ import org.springframework.stereotype.Service;
 @Service
 public class HospitalService extends BaseService<Hospital, HospitalRepository> {
     @Autowired
-    AddressService addressService;
+    private AddressService addressService;
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
-    Page<Hospital> findAvailable(Pageable pageRequest) {
-        return repository.findByIsActiveFalseAndIsDeletedFalse(pageRequest);
+    Page<HospitalDto> findAvailable(Pageable pageRequest) {
+        return repository.findByIsDeletedFalse(pageRequest).map(HospitalDto::new);
     }
 
-    private void processData(HospitalDto dto) {
-        dto.setAddress(addressService.build(dto.getAddressDto()));
-        dto.setAddManagers(userService.findUsers(dto.getAddManagerIds()));
+    HospitalDetailDto hospitalDetail(long hospitalId) {
+        return new HospitalDetailDto(findById(hospitalId));
     }
 
-    public Hospital addHospital(HospitalDto newData) {
+    private void processData(HospitalDataDto data) {
+        if (data.getAddedManagerIds() != null)
+            data.setAddedManagers(userService.findUsers(data.getAddedManagerIds()));
+        if (data.getAddressId() != null)
+            data.setAddress(addressService.build(data.getAddressId()));
+    }
+
+    HospitalDetailDto addHospital(HospitalDataDto newData) {
         processData(newData);
         Hospital hospital = new Hospital();
         hospital.update(newData);
-
-        return save(hospital);
+        return new HospitalDetailDto(save(hospital));
     }
 
-    Hospital updateHospital(HospitalDto updateData) {
-        Hospital hospital = repository.findById(updateData.getId()).orElseThrow(BadRequestException::new);
+    HospitalDetailDto updateHospital(HospitalDataDto updateData) {
+        Hospital hospital = findById(updateData.getId());
         processData(updateData);
         hospital.update(updateData);
-        return update(hospital);
+        return new HospitalDetailDto(update(hospital));
     }
 
-    public void activeHospital(long hospitalId, boolean active) {
-        Hospital hospital = repository.findById(hospitalId).orElseThrow(BadRequestException::new);
+    void activeHospital(long hospitalId, boolean active) {
+        Hospital hospital = findById(hospitalId);
         hospital.setIsActive(active);
-
-        update(hospital);
-    }
-
-
-    public void deleteHospital(long hospitalId) {
-        Hospital hospital = repository.findById(hospitalId).orElseThrow(BadRequestException::new);
-        hospital.setDeleted(true);
-
         update(hospital);
     }
 }

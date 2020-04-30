@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HospitalRepository extends BaseRepository<Hospital> {
-    Page<Hospital> findByIsActiveFalseAndIsDeletedFalse(Pageable pageable);
+    Page<Hospital> findByIsDeletedFalse(Pageable pageable);
 
 }

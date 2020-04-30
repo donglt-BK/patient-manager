@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DoctorRepository extends BaseRepository<Doctor> {
-    Page<Doctor> findByDepartmentIdAndIsActiveFalseAndIsDeletedFalse(Long id, Pageable pageable);
+    Page<Doctor> findByDepartmentIdAndIsDeletedFalse(Long id, Pageable pageable);
 }

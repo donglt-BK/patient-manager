@@ -29,8 +29,9 @@ public class BaseResource<S extends BaseService> {
 
     @ExceptionHandler
     public ResponseEntity<Object> globalExceptionHandler(Exception e) {
-        if (e instanceof UnAuthorizeException) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        if (e instanceof BadRequestException) return ResponseEntity.badRequest().build();
+        if (e instanceof UnAuthorizeException) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        if (e instanceof BadRequestException) return ResponseEntity.badRequest().body(e.getMessage());
+        e.printStackTrace();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 }

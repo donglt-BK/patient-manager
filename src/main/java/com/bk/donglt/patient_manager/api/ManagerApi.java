@@ -1,7 +1,9 @@
 package com.bk.donglt.patient_manager.api;
 
 import com.bk.donglt.patient_manager.base.BaseResource;
-import com.bk.donglt.patient_manager.dto.HospitalDto;
+import com.bk.donglt.patient_manager.dto.hospital.HospitalDataDto;
+import com.bk.donglt.patient_manager.dto.hospital.HospitalDetailDto;
+import com.bk.donglt.patient_manager.dto.hospital.HospitalDto;
 import com.bk.donglt.patient_manager.entity.Doctor;
 import com.bk.donglt.patient_manager.entity.hospital.Department;
 import com.bk.donglt.patient_manager.entity.hospital.Hospital;
@@ -14,19 +16,24 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/manage")
 public class ManagerApi extends BaseResource<ManagerService> {
     @GetMapping("/hospital/list")
-    public ResponseEntity<Page<Hospital>> getHospital(
+    public ResponseEntity<Page<HospitalDto>> getHospital(
             @RequestParam(name = "page", required = false, defaultValue = "1") int page,
             @RequestParam(name = "size", required = false, defaultValue = "10") int size) {
         return ResponseEntity.ok().body(service.getHospitals(getPageable(page, size)));
     }
 
+    @GetMapping("/hospital/detail")
+    public ResponseEntity<HospitalDetailDto> addHospital(@RequestParam("id") long id) {
+        return ResponseEntity.ok().body(service.getHospital(id));
+    }
+
     @PostMapping("/hospital/add")
-    public ResponseEntity<Hospital> addHospital(@RequestBody HospitalDto hospital) {
+    public ResponseEntity<HospitalDetailDto> addHospital(@RequestBody HospitalDataDto hospital) {
         return ResponseEntity.ok().body(service.addHospital(hospital));
     }
 
     @PostMapping("/hospital/update")
-    public ResponseEntity<Hospital> updateHospital(@RequestBody HospitalDto update) {
+    public ResponseEntity<HospitalDetailDto> updateHospital(@RequestBody HospitalDataDto update) {
         return ResponseEntity.ok().body(service.updateHospital(update));
     }
 

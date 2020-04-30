@@ -9,6 +9,6 @@ import javax.persistence.Embeddable;
 @Getter
 @Setter
 public class Location {
-    private long latitude;
-    private long longitude;
+    private Long latitude;
+    private Long longitude;
 }
