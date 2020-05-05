@@ -2,8 +2,6 @@ package com.bk.donglt.patient_manager.service.manager;
 
 import com.bk.donglt.patient_manager.base.BaseService;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDataDto;
-import com.bk.donglt.patient_manager.dto.hospital.HospitalDetailDto;
-import com.bk.donglt.patient_manager.dto.hospital.HospitalDto;
 import com.bk.donglt.patient_manager.entity.hospital.Hospital;
 import com.bk.donglt.patient_manager.repository.HospitalRepository;
 import com.bk.donglt.patient_manager.service.UserService;
@@ -14,19 +12,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
-public class HospitalService extends BaseService<Hospital, HospitalRepository> {
+public class ManageHospitalService extends BaseService<Hospital, HospitalRepository> {
     @Autowired
     private AddressService addressService;
 
     @Autowired
     private UserService userService;
 
-    Page<HospitalDto> findAvailable(Pageable pageRequest) {
-        return repository.findByIsDeletedFalse(pageRequest).map(HospitalDto::new);
-    }
-
-    HospitalDetailDto hospitalDetail(long hospitalId) {
-        return new HospitalDetailDto(findById(hospitalId));
+    Page<Hospital> findAvailable(Pageable pageRequest) {
+        return repository.findByIsDeletedFalse(pageRequest);
     }
 
     private void processData(HospitalDataDto data) {
@@ -36,18 +30,18 @@ public class HospitalService extends BaseService<Hospital, HospitalRepository> {
             data.setAddress(addressService.build(data.getAddressId()));
     }
 
-    HospitalDetailDto addHospital(HospitalDataDto newData) {
+    Hospital addHospital(HospitalDataDto newData) {
         processData(newData);
         Hospital hospital = new Hospital();
         hospital.update(newData);
-        return new HospitalDetailDto(save(hospital));
+        return save(hospital);
     }
 
-    HospitalDetailDto updateHospital(HospitalDataDto updateData) {
+    Hospital updateHospital(HospitalDataDto updateData) {
         Hospital hospital = findById(updateData.getId());
         processData(updateData);
         hospital.update(updateData);
-        return new HospitalDetailDto(update(hospital));
+        return update(hospital);
     }
 
     void activeHospital(long hospitalId, boolean active) {

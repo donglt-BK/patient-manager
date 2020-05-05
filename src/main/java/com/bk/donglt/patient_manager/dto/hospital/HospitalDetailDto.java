@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Getter
@@ -23,7 +24,11 @@ public class HospitalDetailDto {
         id = hospital.getId();
         name = hospital.getName();
         location = hospital.getLocation();
-        managers = new ArrayList<>(hospital.getManagers());
+        if (hospital.getManagers() != null) {
+            managers = new ArrayList<>(hospital.getManagers());
+        } else {
+            managers = new LinkedList<>();
+        }
         address = new AddressDto(hospital.getAddress());
     }
 }

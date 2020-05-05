@@ -1,6 +1,11 @@
 package com.bk.donglt.patient_manager.api;
 
 import com.bk.donglt.patient_manager.base.BaseResource;
+import com.bk.donglt.patient_manager.dto.department.DepartmentDataDto;
+import com.bk.donglt.patient_manager.dto.department.DepartmentDetailDto;
+import com.bk.donglt.patient_manager.dto.department.DepartmentDto;
+import com.bk.donglt.patient_manager.dto.doctor.DoctorDataDto;
+import com.bk.donglt.patient_manager.dto.doctor.DoctorDto;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDataDto;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDetailDto;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDto;
@@ -50,18 +55,86 @@ public class ManagerApi extends BaseResource<ManagerService> {
     }
     //------------------------------------------------------------------------------------------------------------------
     @GetMapping("/department/list")
-    public ResponseEntity<Page<Department>> getDepartment(
+    public ResponseEntity<Page<DepartmentDto>> getDepartment(
             @RequestParam("hospitalId") long id,
             @RequestParam(name = "page", required = false, defaultValue = "1") int page,
             @RequestParam(name = "size", required = false, defaultValue = "10") int size) {
         return ResponseEntity.ok().body(service.getDepartments(id, getPageable(page, size)));
     }
+
+    @GetMapping("/department/detail")
+    public ResponseEntity<DepartmentDetailDto> addDepartment(
+            @RequestParam("hospitalId") long hospitalId,
+            @RequestParam("departmentId") long departmentId) {
+        return ResponseEntity.ok().body(service.getDepartment(hospitalId, departmentId));
+    }
+
+    @PostMapping("/department/add")
+    public ResponseEntity<DepartmentDetailDto> addDepartment(@RequestBody DepartmentDataDto department) {
+        return ResponseEntity.ok().body(service.addDepartment(department));
+    }
+
+    @PostMapping("/department/update")
+    public ResponseEntity<DepartmentDetailDto> updateDepartment(@RequestBody DepartmentDataDto update) {
+        return ResponseEntity.ok().body(service.updateDepartment(update));
+    }
+
+    @PostMapping("/department/active")
+    public ResponseEntity<Department> activeDepartment(
+            @RequestParam("hospitalId") long hospitalId,
+            @RequestParam("departmentId") long departmentId,
+            @RequestParam("isActive") boolean active) {
+        service.activeDepartment(hospitalId, departmentId, active);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/department/delete")
+    public ResponseEntity<Department> deleteDepartment(
+            @RequestParam("hospitalId") long hospitalId,
+            @RequestParam("departmentId") long departmentId) {
+        service.deleteDepartment(hospitalId, departmentId);
+        return ResponseEntity.ok().build();
+    }
     //------------------------------------------------------------------------------------------------------------------
     @GetMapping("/doctor/list")
-    public ResponseEntity<Page<Doctor>> getDoctor(
+    public ResponseEntity<Page<DoctorDto>> getDoctor(
             @RequestParam("departmentId") long id,
             @RequestParam(name = "page", required = false, defaultValue = "1") int page,
             @RequestParam(name = "size", required = false, defaultValue = "10") int size) {
         return ResponseEntity.ok().body(service.getDoctors(id, getPageable(page, size)));
+    }
+
+    @GetMapping("/doctor/detail")
+    public ResponseEntity<DoctorDto> addDoctor(
+            @RequestParam("departmentId") long departmentId,
+            @RequestParam("doctorId") long doctorId) {
+        return ResponseEntity.ok().body(service.getDoctor(departmentId, doctorId));
+    }
+
+    @PostMapping("/doctor/add")
+    public ResponseEntity<DoctorDto> addDoctor(@RequestBody DoctorDataDto doctor) {
+        return ResponseEntity.ok().body(service.addDoctor(doctor));
+    }
+
+    @PostMapping("/doctor/updateLicense")
+    public ResponseEntity<DoctorDto> updateDoctorLicense(@RequestBody DoctorDataDto update) {
+        return ResponseEntity.ok().body(service.updateLicense(update));
+    }
+
+    @PostMapping("/doctor/active")
+    public ResponseEntity<Doctor> activeDoctor(
+            @RequestParam("departmentId") long departmentId,
+            @RequestParam("doctorId") long doctorId,
+            @RequestParam("isActive") boolean active) {
+        service.activeDoctor(departmentId, doctorId, active);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/doctor/delete")
+    public ResponseEntity<Doctor> deleteDoctor(
+            @RequestParam("departmentId") long departmentId,
+            @RequestParam("doctorId") long doctorId) {
+        service.deleteDoctor(departmentId, doctorId);
+        return ResponseEntity.ok().build();
     }
 }
