@@ -37,8 +37,7 @@ public class ManageHospitalService extends BaseService<Hospital, HospitalReposit
         return save(hospital);
     }
 
-    Hospital updateHospital(HospitalDataDto updateData) {
-        Hospital hospital = findById(updateData.getId());
+    Hospital updateHospital(Hospital hospital, HospitalDataDto updateData) {
         processData(updateData);
         hospital.update(updateData);
         return update(hospital);

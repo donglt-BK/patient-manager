@@ -33,8 +33,7 @@ public class ManageDepartmentService extends BaseService<Department, DepartmentR
         return save(department);
     }
 
-    Department updateDepartment(DepartmentDataDto updateData) {
-        Department department = findById(updateData.getId());
+    Department updateDepartment(Department department, DepartmentDataDto updateData) {
         if (!department.getHospitalId().equals(updateData.getHospitalId()))
             throw new BadRequestException("Department not in this hospital");
 

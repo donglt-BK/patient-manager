@@ -19,13 +19,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserService userService;
 
-    private Logger LOGGER = LoggerFactory.getLogger(SecurityConfig.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(SecurityConfig.class);
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user;
         LOGGER.info("Load user by username [{}] ", username);
-        user = userService.findUser(username);
+        User user = userService.findUser(username);
 
         if (user == null) {
             throw new UsernameNotFoundException("Cannot find user " + username);
@@ -33,6 +32,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().toString()));
-        return new CustomUserDetails(user, authorities);
+
+        return new CustomUserDetails(userService.getUserInfo(user.getId()), user.getPassword(), authorities);
     }
 }

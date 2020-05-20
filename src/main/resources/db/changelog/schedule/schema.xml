@@ -16,7 +16,6 @@
 
             <column name="date" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
             <column name="shift" type="varchar(20)"/>
-            <column name="doctor_id" type="int(11)"/>
             <column name="department_id" type="int(11)"/>
             <column name="limit" type="int(11)"/>
         </createTable>

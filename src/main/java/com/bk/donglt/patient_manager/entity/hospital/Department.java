@@ -30,10 +30,10 @@ public class Department extends BaseEntity {
     )
     private Set<User> managers;
 
-    public boolean manageBy(User user) {
-        if (managers.size() == 1) return managers.toArray(new User[1])[0].getId().equals(user.getId());
-
-        return managers.stream().map(manager -> manager.getId().equals(user.getId())).reduce(Boolean::logicalOr).orElse(false);
+    public boolean manageBy(Long userId) {
+        return managers.stream()
+                .map(manager -> manager.getId().equals(userId))
+                .reduce(Boolean::logicalOr).orElse(false);
     }
 
     public void update(DepartmentDataDto update) {

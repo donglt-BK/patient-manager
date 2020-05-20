@@ -10,7 +10,6 @@ public class CurrentUserDetailsContainer {
         if (SecurityContextHolder.getContext() != null) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null && authentication.isAuthenticated()) {
-
                 Object principal = authentication.getPrincipal();
                 if (principal instanceof CustomUserDetails) {
                     return (CustomUserDetails) principal;
@@ -19,5 +18,4 @@ public class CurrentUserDetailsContainer {
         }
         return null;
     }
-
 }

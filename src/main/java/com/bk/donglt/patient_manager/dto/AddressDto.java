@@ -1,6 +1,6 @@
 package com.bk.donglt.patient_manager.dto;
 
-import com.bk.donglt.patient_manager.entity.address.Address;
+import com.bk.donglt.patient_manager.entity.address.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,14 +22,23 @@ public class AddressDto {
     private String specificAddress;
 
     public AddressDto(Address address) {
-        country = address.getCountry().getName();
-        countryId = address.getCountry().getId();
-        city = address.getCity().getName();
-        cityId = address.getCity().getId();
-        district = address.getDistrict().getName();
-        districtId = address.getDistrict().getId();
-        block = address.getBlock().getName();
-        blockId = address.getBlock().getId();
+        if (address == null) return;
+        Block block = address.getBlock();
+        this.block = block.getName();
+        blockId = block.getId();
+
+        District district = block.getDistrict();
+        this.district = district.getName();
+        districtId = district.getId();
+
+        City city = district.getCity();
+        this.city = city.getName();
+        cityId = city.getId();
+
+        Country country = city.getCountry();
+        this.country = country.getName();
+        countryId = country.getId();
+        
         specificAddress = address.getSpecificAddress();
     }
 }

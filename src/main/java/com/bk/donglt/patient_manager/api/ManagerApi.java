@@ -64,9 +64,8 @@ public class ManagerApi extends BaseResource<ManagerService> {
 
     @GetMapping("/department/detail")
     public ResponseEntity<DepartmentDetailDto> addDepartment(
-            @RequestParam("hospitalId") long hospitalId,
             @RequestParam("departmentId") long departmentId) {
-        return ResponseEntity.ok().body(service.getDepartment(hospitalId, departmentId));
+        return ResponseEntity.ok().body(service.getDepartment(departmentId));
     }
 
     @PostMapping("/department/add")
@@ -106,9 +105,8 @@ public class ManagerApi extends BaseResource<ManagerService> {
 
     @GetMapping("/doctor/detail")
     public ResponseEntity<DoctorDto> addDoctor(
-            @RequestParam("departmentId") long departmentId,
             @RequestParam("doctorId") long doctorId) {
-        return ResponseEntity.ok().body(service.getDoctor(departmentId, doctorId));
+        return ResponseEntity.ok().body(service.getDoctor(doctorId));
     }
 
     @PostMapping("/doctor/add")

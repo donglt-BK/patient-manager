@@ -4,14 +4,12 @@ import com.bk.donglt.patient_manager.dto.AddressDto;
 import com.bk.donglt.patient_manager.entity.User;
 import com.bk.donglt.patient_manager.entity.address.Address;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
 public class HospitalDataDto {
     private Long id;
     private String name;

@@ -11,11 +11,9 @@ import com.bk.donglt.patient_manager.dto.hospital.HospitalDataDto;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDetailDto;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDto;
 import com.bk.donglt.patient_manager.entity.Doctor;
-import com.bk.donglt.patient_manager.entity.User;
 import com.bk.donglt.patient_manager.entity.hospital.Department;
 import com.bk.donglt.patient_manager.entity.hospital.Hospital;
 import com.bk.donglt.patient_manager.enums.Role;
-import com.bk.donglt.patient_manager.exception.BadRequestException;
 import com.bk.donglt.patient_manager.exception.UnAuthorizeException;
 import com.bk.donglt.patient_manager.repository.DoctorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +39,9 @@ public class ManagerService extends BaseService<Doctor, DoctorRepository> {
     }
 
     public HospitalDetailDto getHospital(long hospitalId) {
-        checkUserAuthorize();
-        return new HospitalDetailDto(manageHospitalService.findById(hospitalId));
+        Hospital hospital = manageHospitalService.findById(hospitalId);
+        checkUserAuthorize(hospital);
+        return new HospitalDetailDto(hospital);
     }
 
     public HospitalDetailDto addHospital(HospitalDataDto hospital) {
@@ -51,8 +50,9 @@ public class ManagerService extends BaseService<Doctor, DoctorRepository> {
     }
 
     public HospitalDetailDto updateHospital(HospitalDataDto update) {
-        checkUserAuthorize();
-        return new HospitalDetailDto(manageHospitalService.updateHospital(update));
+        Hospital hospital = manageHospitalService.findById(update.getId());
+        checkUserAuthorize(hospital);
+        return new HospitalDetailDto(manageHospitalService.updateHospital(hospital, update));
     }
 
     public void activeHospital(long hospitalId, boolean active) {
@@ -76,13 +76,10 @@ public class ManagerService extends BaseService<Doctor, DoctorRepository> {
         });
     }
 
-    public DepartmentDetailDto getDepartment(long hospitalId, long departmentId) {
-        Hospital hospital = manageHospitalService.findById(hospitalId);
-        checkUserAuthorize(hospital);
+    public DepartmentDetailDto getDepartment(long departmentId) {
         Department department = manageDepartmentService.findById(departmentId);
-        if (!department.getHospitalId().equals(hospitalId))
-            throw new BadRequestException("Department not in this hospital");
-
+        Hospital hospital = manageHospitalService.findById(department.getHospitalId());
+        checkUserAuthorize(hospital, department);
         return buildDepartmentDto(hospital, department);
     }
 
@@ -94,8 +91,9 @@ public class ManagerService extends BaseService<Doctor, DoctorRepository> {
 
     public DepartmentDetailDto updateDepartment(DepartmentDataDto update) {
         Hospital hospital = manageHospitalService.findById(update.getHospitalId());
-        checkUserAuthorize(hospital);
-        return buildDepartmentDto(hospital, manageDepartmentService.updateDepartment(update));
+        Department department = manageDepartmentService.findById(update.getId());
+        checkUserAuthorize(hospital, department);
+        return buildDepartmentDto(hospital, manageDepartmentService.updateDepartment(department, update));
     }
 
     public void activeDepartment(long hospitalId, long departmentId, boolean active) {
@@ -122,13 +120,10 @@ public class ManagerService extends BaseService<Doctor, DoctorRepository> {
         return manageDoctorService.findAvailable(department.getId(), pageable).map(doctor -> buildDoctorDto(department, doctor));
     }
 
-    public DoctorDto getDoctor(long departmentId, long doctorId) {
-        Department department = manageDepartmentService.findById(departmentId);
-        checkUserAuthorize(department);
+    public DoctorDto getDoctor(long doctorId) {
         Doctor doctor = manageDoctorService.findById(doctorId);
-        if (!doctor.getDepartmentId().equals(departmentId))
-            throw new BadRequestException("Doctor not in this department");
-
+        Department department = manageDepartmentService.findById(doctor.getDepartmentId());
+        checkUserAuthorize(department, doctor);
         return buildDoctorDto(department, doctor);
     }
 
@@ -139,9 +134,10 @@ public class ManagerService extends BaseService<Doctor, DoctorRepository> {
     }
 
     public DoctorDto updateLicense(DoctorDataDto update) {
+        Doctor doctor = manageDoctorService.findById(update.getId());
         Department department = manageDepartmentService.findById(update.getDepartmentId());
-        checkUserAuthorize(department);
-        return buildDoctorDto(department, manageDoctorService.updateLicense(update));
+        checkUserAuthorize(department, doctor);
+        return buildDoctorDto(department, manageDoctorService.updateLicense(doctor, update));
     }
 
     public void activeDoctor(long departmentId, long doctorId, boolean active) {
@@ -160,34 +156,42 @@ public class ManagerService extends BaseService<Doctor, DoctorRepository> {
         DoctorDto dto = new DoctorDto(doctor);
         dto.setDepartmentName(department.getName());
         return dto;
-    }    //------------------------------------------------------------------------------------------------------------------
-    private void checkUserAuthorize() throws UnAuthorizeException {
-        checkUserAuthorize(null, null);
+    }
+    //------------------------------------------------------------------------------------------------------------------
+    private void checkUserAuthorize() {
+        checkUserAuthorize(null, null, null);
     }
 
-    private void checkUserAuthorize(Hospital hospital) throws UnAuthorizeException {
+    private void checkUserAuthorize(Hospital hospital) {
         checkUserAuthorize(hospital, null);
     }
 
-    private void checkUserAuthorize(Department department) throws UnAuthorizeException {
+    private void checkUserAuthorize(Department department) {
         Hospital hospital = manageHospitalService.findById(department.getHospitalId());
         checkUserAuthorize(hospital, department);
     }
 
-    private void checkUserAuthorize(Hospital hospital, Department department) throws UnAuthorizeException {
+    private void checkUserAuthorize(Department department, Doctor doctor) {
+        Hospital hospital = manageHospitalService.findById(department.getHospitalId());
+        checkUserAuthorize(hospital, department, doctor);
+    }
+
+    private void checkUserAuthorize(Hospital hospital, Department department) {
+        checkUserAuthorize(hospital, department, null);
+    }
+
+    private void checkUserAuthorize(Hospital hospital, Department department, Doctor doctor) {
         if (disableSecurity) return;
         if (getCurrentUser().hasRole(Role.SYSTEM_ADMIN)) return;
 
         CustomUserDetails userAuthenticate = getCurrentUser();
-        User user = userAuthenticate.getUser();
+        Long userId = userAuthenticate.getUser().getId();
 
-        if (hospital != null) {
-            if (userAuthenticate.hasRole(Role.HOSPITAL_MANAGER) && hospital.manageBy(user)) return;
-        }
+        if (hospital != null && hospital.manageBy(userId)) return;
 
-        if (department != null) {
-            if (userAuthenticate.hasRole(Role.DEPARTMENT_MANAGER) && department.manageBy(user)) return;
-        }
+        if (department != null && department.manageBy(userId)) return;
+
+        if (doctor != null && doctor.getUser().getId().equals(userId)) return;
 
         throw new UnAuthorizeException();
     }

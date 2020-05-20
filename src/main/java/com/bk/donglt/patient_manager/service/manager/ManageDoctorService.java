@@ -28,8 +28,7 @@ public class ManageDoctorService extends BaseService<Doctor, DoctorRepository> {
         return save(doctor);
     }
 
-    Doctor updateLicense(DoctorDataDto update) {
-        Doctor doctor = findById(update.getId());
+    Doctor updateLicense(Doctor doctor, DoctorDataDto update) {
         if (!doctor.getDepartmentId().equals(update.getDepartmentId()))
             throw new BadRequestException("Doctor not in this department");
 

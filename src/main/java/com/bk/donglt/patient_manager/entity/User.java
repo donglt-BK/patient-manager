@@ -1,10 +1,12 @@
 package com.bk.donglt.patient_manager.entity;
 
 import com.bk.donglt.patient_manager.base.BaseEntity;
+import com.bk.donglt.patient_manager.dto.user.UserDataDto;
 import com.bk.donglt.patient_manager.entity.address.Address;
 import com.bk.donglt.patient_manager.enums.Gender;
 import com.bk.donglt.patient_manager.enums.Role;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -13,6 +15,7 @@ import java.util.Date;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @Table(name = "user")
 public class User extends BaseEntity {
 
@@ -28,23 +31,14 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    private String job;
-    private String race;
-
     @Embedded
     @AssociationOverrides({
-            @AssociationOverride(name = "country", joinColumns = @JoinColumn(name = "country_id")),
-            @AssociationOverride(name = "city", joinColumns = @JoinColumn(name = "city_id")),
-            @AssociationOverride(name = "district", joinColumns = @JoinColumn(name = "district_id")),
             @AssociationOverride(name = "block", joinColumns = @JoinColumn(name = "block_id")),
     })
     private Address address;
 
     @Embedded
     @AssociationOverrides({
-            @AssociationOverride(name = "country", joinColumns = @JoinColumn(name = "work_country_id")),
-            @AssociationOverride(name = "city", joinColumns = @JoinColumn(name = "work_city_id")),
-            @AssociationOverride(name = "district", joinColumns = @JoinColumn(name = "work_district_id")),
             @AssociationOverride(name = "block", joinColumns = @JoinColumn(name = "work_block_id")),
     })
     @AttributeOverride(name = "specificAddress", column = @Column(name = "work_specific_address"))
@@ -52,4 +46,20 @@ public class User extends BaseEntity {
 
     private String phone;
     private String email;
+
+    public User(UserDataDto userDto) {
+        role = Role.USER;
+        username = userDto.getUsername();
+        password = userDto.getPassword();
+
+        name = userDto.getName();
+        dob = userDto.getDob();
+        gender = userDto.getGender();
+
+        address = userDto.getFormattedAddress();
+        workAddress = userDto.getFormattedWorkAddress();
+
+        phone = userDto.getPhone();
+        email = userDto.getEmail();
+    }
 }
