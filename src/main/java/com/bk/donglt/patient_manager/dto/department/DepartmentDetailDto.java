@@ -2,6 +2,7 @@ package com.bk.donglt.patient_manager.dto.department;
 
 import com.bk.donglt.patient_manager.entity.User;
 import com.bk.donglt.patient_manager.entity.hospital.Department;
+import com.bk.donglt.patient_manager.entity.hospital.Hospital;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,10 +19,12 @@ public class DepartmentDetailDto {
     private String hospitalName;
     private List<User> managers;
 
-    public DepartmentDetailDto(Department department) {
+    public DepartmentDetailDto(Hospital hospital, Department department) {
         id = department.getId();
         name = department.getName();
-        hospitalId = department.getHospitalId();
+        hospitalId = hospital.getId();
+        hospitalName = hospital.getName();
+
         if (department.getManagers() != null) {
             managers = new ArrayList<>(department.getManagers());
         } else {

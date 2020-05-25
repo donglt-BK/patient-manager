@@ -2,6 +2,7 @@ package com.bk.donglt.patient_manager.service.manager;
 
 import com.bk.donglt.patient_manager.base.BaseService;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDataDto;
+import com.bk.donglt.patient_manager.dto.manage.ManagerChangeDto;
 import com.bk.donglt.patient_manager.entity.hospital.Hospital;
 import com.bk.donglt.patient_manager.repository.HospitalRepository;
 import com.bk.donglt.patient_manager.service.UserService;
@@ -12,7 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ManageHospitalService extends BaseService<Hospital, HospitalRepository> {
+public class HospitalService extends BaseService<Hospital, HospitalRepository> {
     @Autowired
     private AddressService addressService;
 
@@ -24,10 +25,12 @@ public class ManageHospitalService extends BaseService<Hospital, HospitalReposit
     }
 
     private void processData(HospitalDataDto data) {
-        if (data.getAddedManagerIds() != null)
-            data.setAddedManagers(userService.findUsers(data.getAddedManagerIds()));
         if (data.getAddressId() != null)
             data.setAddress(addressService.build(data.getAddressId()));
+    }
+    private void processData(ManagerChangeDto data) {
+        if (data.getAddedManagerIds() != null)
+            data.setAddedManagers(userService.findUsers(data.getAddedManagerIds()));
     }
 
     Hospital addHospital(HospitalDataDto newData) {
@@ -43,9 +46,16 @@ public class ManageHospitalService extends BaseService<Hospital, HospitalReposit
         return update(hospital);
     }
 
+    Hospital updateManager(ManagerChangeDto updateData) {
+        Hospital hospital = findById(updateData.getHospitalId());
+        processData(updateData);
+        hospital.update(updateData);
+        return update(hospital);
+    }
+
     void activeHospital(long hospitalId, boolean active) {
         Hospital hospital = findById(hospitalId);
-        hospital.setIsActive(active);
+        hospital.setActive(active);
         update(hospital);
     }
 }

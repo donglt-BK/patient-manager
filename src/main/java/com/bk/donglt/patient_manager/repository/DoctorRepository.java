@@ -11,9 +11,12 @@ import java.util.List;
 
 @Repository
 public interface DoctorRepository extends BaseRepository<Doctor> {
-    Page<Doctor> findByDepartmentIdAndIsDeletedFalse(Long id, Pageable pageable);
+    Page<Doctor> findByDepartmentIdAndIsDeletedFalse(Long departmentId, Pageable pageable);
     Page<Doctor> findByUser_NameContaining(String name, Pageable pageable);
 
     @Query("select d.id from Doctor d where d.user.id = ?1")
-    List<Long> findDoctorIdsByUserId(Long id);
+    List<Long> findDoctorIdsByUserId(Long userId);
+
+    Doctor findByUser_IdAndDepartmentIdAndIsDeletedFalse(Long userId, Long departmentId);
+
 }

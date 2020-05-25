@@ -43,4 +43,9 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="add_approve_column" author="donglt">
+        <addColumn tableName="schedule_change_request">
+            <column name="approve" type="boolean" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

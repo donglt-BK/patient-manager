@@ -2,6 +2,7 @@ package com.bk.donglt.patient_manager.entity.hospital;
 
 import com.bk.donglt.patient_manager.base.BaseEntity;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDataDto;
+import com.bk.donglt.patient_manager.dto.manage.ManagerChangeDto;
 import com.bk.donglt.patient_manager.entity.User;
 import com.bk.donglt.patient_manager.entity.address.Address;
 import com.bk.donglt.patient_manager.entity.address.Location;
@@ -26,7 +27,7 @@ public class Hospital extends BaseEntity {
     private Location location;
 
     @Column(name = "active")
-    private Boolean isActive;
+    private boolean isActive;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -35,6 +36,10 @@ public class Hospital extends BaseEntity {
             inverseJoinColumns = {@JoinColumn(name = "manager_id")}
     )
     private Set<User> managers;
+
+    public Hospital() {
+        isActive = true;
+    }
 
     public boolean manageBy(Long userId) {
         return managers.stream()
@@ -45,12 +50,19 @@ public class Hospital extends BaseEntity {
     public void update(HospitalDataDto update) {
         if (update.getName() != null) name = update.getName();
 
-        if (location == null) location = new Location();
-        if (update.getLatitude() != null) location.setLatitude(update.getLatitude());
-        if (update.getLongitude() != null) location.setLongitude(update.getLongitude());
+        if (update.getLatitude() != null) {
+            if (location == null) location = new Location();
+            location.setLatitude(update.getLatitude());
+        }
+        if (update.getLongitude() != null) {
+            if (location == null) location = new Location();
+            location.setLongitude(update.getLongitude());
+        }
 
         if (update.getAddress() != null) address = update.getAddress();
+    }
 
+    public void update(ManagerChangeDto update) {
         if (update.getAddedManagers() != null) managers.addAll(update.getAddedManagers());
 
         List<Long> removeManagerIds = update.getRemovedManagerIds();

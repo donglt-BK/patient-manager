@@ -27,5 +27,10 @@ public class ScheduleChangeRequest extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Shift shift;
 
-    private Boolean isResolved;
+    @Column(name = "resolve")
+    private boolean isResolved;
+
+
+    @Column(name = "approve")
+    private boolean isApproved;
 }

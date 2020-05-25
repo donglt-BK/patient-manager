@@ -2,6 +2,7 @@ package com.bk.donglt.patient_manager.entity.hospital;
 
 import com.bk.donglt.patient_manager.base.BaseEntity;
 import com.bk.donglt.patient_manager.dto.department.DepartmentDataDto;
+import com.bk.donglt.patient_manager.dto.manage.ManagerChangeDto;
 import com.bk.donglt.patient_manager.entity.User;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,7 +21,7 @@ public class Department extends BaseEntity {
     private Long hospitalId;
 
     @Column(name = "active")
-    private Boolean isActive;
+    private boolean isActive;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -29,6 +30,10 @@ public class Department extends BaseEntity {
             inverseJoinColumns = {@JoinColumn(name = "manager_id")}
     )
     private Set<User> managers;
+
+    public Department() {
+        isActive = true;
+    }
 
     public boolean manageBy(Long userId) {
         return managers.stream()
@@ -42,9 +47,10 @@ public class Department extends BaseEntity {
 
         if (update.getName() != null)
             name = update.getName();
+    }
 
-        if (update.getAddedManagers() != null)
-            managers.addAll(update.getAddedManagers());
+    public void update(ManagerChangeDto update) {
+        if (update.getAddedManagers() != null) managers.addAll(update.getAddedManagers());
 
         List<Long> removeManagerIds = update.getRemovedManagerIds();
         if (removeManagerIds != null && removeManagerIds.size() != 0)

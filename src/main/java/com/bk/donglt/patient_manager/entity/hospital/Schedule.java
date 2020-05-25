@@ -8,16 +8,15 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "schedule")
 public class Schedule extends BaseEntity {
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department_id")
-    private Department department;
+    private Long departmentId;
 
     private Date date;
 
@@ -30,7 +29,25 @@ public class Schedule extends BaseEntity {
             joinColumns = @JoinColumn(name = "schedule_id"),
             inverseJoinColumns = {@JoinColumn(name = "doctor_id")}
     )
-    private List<Doctor> doctors;
+    private Set<Doctor> doctors;
 
+    @Column(name = "`limit`")
     private int patientPerDoctor;
+
+    public void addDoctor(Doctor doctor) {
+        if (doctors == null) doctors = new HashSet<>();
+        doctors.add(doctor);
+    }
+
+    public void removeDoctor(Doctor removedDoctor) {
+        if (doctors != null) doctors.removeIf(d -> d.getId().equals(removedDoctor.getId()));
+    }
+
+    public boolean contain(Doctor doctor) {
+        if (doctors == null) return false;
+        for (Doctor d : doctors) {
+            if (d.getId().equals(doctor.getId())) return true;
+        }
+        return false;
+    }
 }

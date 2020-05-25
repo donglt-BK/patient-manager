@@ -1,6 +1,7 @@
 package com.bk.donglt.patient_manager.dto.doctor;
 
 import com.bk.donglt.patient_manager.entity.Doctor;
+import com.bk.donglt.patient_manager.entity.hospital.Department;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,10 +17,12 @@ public class DoctorDto {
     private long departmentId;
     private String departmentName;
 
-    public DoctorDto(Doctor doctor) {
+    public DoctorDto(Department department, Doctor doctor) {
         id = doctor.getId();
         name = doctor.getUser().getName();
         licenceUrl = doctor.getLicenseImageUrl();
-        isActive = doctor.getIsActive();
+        isActive = doctor.isActive();
+        departmentId = department.getId();
+        departmentName = department.getName();
     }
 }

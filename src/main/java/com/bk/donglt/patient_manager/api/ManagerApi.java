@@ -9,6 +9,7 @@ import com.bk.donglt.patient_manager.dto.doctor.DoctorDto;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDataDto;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDetailDto;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDto;
+import com.bk.donglt.patient_manager.dto.manage.ManagerChangeDto;
 import com.bk.donglt.patient_manager.entity.Doctor;
 import com.bk.donglt.patient_manager.entity.hospital.Department;
 import com.bk.donglt.patient_manager.entity.hospital.Hospital;
@@ -40,6 +41,11 @@ public class ManagerApi extends BaseResource<ManagerService> {
     @PostMapping("/hospital/update")
     public ResponseEntity<HospitalDetailDto> updateHospital(@RequestBody HospitalDataDto update) {
         return ResponseEntity.ok().body(service.updateHospital(update));
+    }
+
+    @PostMapping("/hospital/changeManager")
+    public ResponseEntity<HospitalDetailDto> updateHospitalManager(@RequestBody ManagerChangeDto update) {
+        return ResponseEntity.ok().body(service.updateHospitalManager(update));
     }
 
     @PostMapping("/hospital/active")
@@ -78,12 +84,16 @@ public class ManagerApi extends BaseResource<ManagerService> {
         return ResponseEntity.ok().body(service.updateDepartment(update));
     }
 
+    @PostMapping("/department/changeManager")
+    public ResponseEntity<DepartmentDetailDto> updateDepartmentManager(@RequestBody ManagerChangeDto update) {
+        return ResponseEntity.ok().body(service.updateDepartmentManager(update));
+    }
+
     @PostMapping("/department/active")
     public ResponseEntity<Department> activeDepartment(
-            @RequestParam("hospitalId") long hospitalId,
             @RequestParam("departmentId") long departmentId,
             @RequestParam("isActive") boolean active) {
-        service.activeDepartment(hospitalId, departmentId, active);
+        service.activeDepartment(departmentId, active);
         return ResponseEntity.ok().build();
     }
 
@@ -121,10 +131,9 @@ public class ManagerApi extends BaseResource<ManagerService> {
 
     @PostMapping("/doctor/active")
     public ResponseEntity<Doctor> activeDoctor(
-            @RequestParam("departmentId") long departmentId,
             @RequestParam("doctorId") long doctorId,
             @RequestParam("isActive") boolean active) {
-        service.activeDoctor(departmentId, doctorId, active);
+        service.activeDoctor(doctorId, active);
         return ResponseEntity.ok().build();
     }
 

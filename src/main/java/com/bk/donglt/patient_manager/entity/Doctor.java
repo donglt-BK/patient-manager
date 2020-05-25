@@ -20,5 +20,9 @@ public class Doctor extends BaseEntity {
     private String licenseImageUrl;
 
     @Column(name = "active")
-    private Boolean isActive;
+    private boolean isActive;
+
+    public Doctor() {
+        isActive = true;
+    }
 }
