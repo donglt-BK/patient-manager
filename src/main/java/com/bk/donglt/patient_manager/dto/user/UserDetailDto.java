@@ -1,6 +1,7 @@
 package com.bk.donglt.patient_manager.dto.user;
 
 import com.bk.donglt.patient_manager.dto.AddressDto;
+import com.bk.donglt.patient_manager.dto.doctor.DoctorDto;
 import com.bk.donglt.patient_manager.entity.User;
 import com.bk.donglt.patient_manager.enums.Gender;
 import lombok.Getter;
@@ -32,6 +33,7 @@ public class UserDetailDto {
     private List<Long> manageDepartmentIds;
 
     private List<Long> doctorIds;
+    private List<DoctorDto> doctorRequest;
 
     private boolean isSystemAdmin;
 

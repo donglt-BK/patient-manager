@@ -21,4 +21,10 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="create_status_for_doctor" author="donglt">
+        <dropColumn tableName="doctor" columnName="active"/>
+        <addColumn tableName="doctor">
+            <column name="status" type="varchar(200)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -43,6 +44,11 @@ public abstract class BaseService<E extends BaseEntity, R extends BaseRepository
 
     public E findById(Long id) {
         return repository.findById(id).orElseThrow(() -> new BadRequestException("Id not found"));
+    }
+
+
+    public List<E> findByIdIn(Collection<Long> ids) {
+        return repository.findByIdIn(ids);
     }
 
     public E update(E entity) {

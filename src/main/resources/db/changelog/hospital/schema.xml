@@ -33,4 +33,10 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="create_status_for_hospital" author="donglt">
+        <dropColumn tableName="hospital" columnName="active"/>
+        <addColumn tableName="hospital">
+            <column name="status" type="varchar(200)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -25,4 +25,11 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="create_status_for_department" author="donglt">
+        <dropColumn tableName="department" columnName="active"/>
+        <addColumn tableName="department">
+            <column name="status" type="varchar(200)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

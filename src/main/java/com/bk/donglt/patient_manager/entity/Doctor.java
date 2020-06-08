@@ -1,6 +1,7 @@
 package com.bk.donglt.patient_manager.entity;
 
 import com.bk.donglt.patient_manager.base.BaseEntity;
+import com.bk.donglt.patient_manager.enums.Status;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,10 +20,10 @@ public class Doctor extends BaseEntity {
 
     private String licenseImageUrl;
 
-    @Column(name = "active")
-    private boolean isActive;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     public Doctor() {
-        isActive = true;
+        status = Status.UNAVAILABLE;
     }
 }

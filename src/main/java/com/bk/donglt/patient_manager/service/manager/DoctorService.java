@@ -3,6 +3,7 @@ package com.bk.donglt.patient_manager.service.manager;
 import com.bk.donglt.patient_manager.base.BaseService;
 import com.bk.donglt.patient_manager.dto.doctor.DoctorDataDto;
 import com.bk.donglt.patient_manager.entity.Doctor;
+import com.bk.donglt.patient_manager.enums.Status;
 import com.bk.donglt.patient_manager.exception.BadRequestException;
 import com.bk.donglt.patient_manager.repository.DoctorRepository;
 import com.bk.donglt.patient_manager.service.UserService;
@@ -16,8 +17,11 @@ public class DoctorService extends BaseService<Doctor, DoctorRepository> {
     @Autowired
     private UserService userService;
 
+    public Page<Doctor> findSearchable(Long departmentId, String name, Pageable pageRequest) {
+        return repository.findByDepartmentIdAndUser_NameContainingAndStatusNotAndIsDeletedFalse(departmentId, name, Status.HIDDEN, pageRequest);
+    }
 
-    Page<Doctor> findAvailable(Long departmentId, Pageable pageRequest) {
+    Page<Doctor> findAll(Long departmentId, Pageable pageRequest) {
         return repository.findByDepartmentIdAndIsDeletedFalse(departmentId, pageRequest);
     }
 
@@ -32,14 +36,9 @@ public class DoctorService extends BaseService<Doctor, DoctorRepository> {
         return save(doctor);
     }
 
-    Doctor updateLicense(Doctor doctor, DoctorDataDto update) {
+    Doctor updateDoctor(Doctor doctor, DoctorDataDto update) {
         doctor.setLicenseImageUrl(update.getLicenceUrl());
         return update(doctor);
-    }
-
-    void activeDoctor(Doctor doctor, boolean active) {
-        doctor.setActive(active);
-        update(doctor);
     }
 
     public Doctor findMeInDepartment(Long departmentId) {

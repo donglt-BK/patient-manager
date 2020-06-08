@@ -13,8 +13,10 @@ import com.bk.donglt.patient_manager.service.manager.DoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ScheduleService extends BaseService<Schedule, ScheduleRepository> {
@@ -33,14 +35,29 @@ public class ScheduleService extends BaseService<Schedule, ScheduleRepository> {
         return repository.findByDateBetweenAndDepartmentIdAndIsDeletedFalse(start, end, departmentId);
     }
 
-    public Schedule assign(Date date, Shift shift, Long doctorId) {
-        Doctor doctor = doctorService.findById(doctorId);
-        Department department = departmentService.findById(doctor.getDepartmentId());
+    public Schedule assign(Date date, Shift shift, String[] doctorIds) {
+
+        List<Doctor> doctors = doctorService.findByIdIn(Arrays.stream(doctorIds).map(Long::valueOf).collect(Collectors.toList()));
+        if (doctors.size() == 0) throw new BadRequestException("No doctor found");
+
+        Department department = departmentService.findById(doctors.get(0).getDepartmentId());
         checkUserAuthorize(department);
-        return createSchedule(date, shift, doctor, department);
+        Schedule schedule = repository.findByDateAndShiftAndDepartmentIdAndIsDeletedFalse(date, shift, department.getHospitalId());
+        if (schedule == null) {
+            schedule = new Schedule();
+            schedule.setDate(date);
+            schedule.setShift(shift);
+            schedule.setDepartmentId(department.getId());
+        }
+        for (Doctor doctor : doctors) {
+            if (!doctor.getDepartmentId().equals(department.getId()))
+                throw new BadRequestException("Doctors not in same department");
+            schedule.addDoctor(doctor);
+        }
+        return schedule;
     }
 
-    Schedule createSchedule(Date date, Shift shift, Doctor doctor, Department department) {
+    void createSchedule(Date date, Shift shift, Doctor doctor, Department department) {
         Schedule schedule = repository.findByDateAndShiftAndDepartmentIdAndIsDeletedFalse(date, shift, department.getHospitalId());
         if (schedule == null) {
             schedule = new Schedule();
@@ -48,10 +65,10 @@ public class ScheduleService extends BaseService<Schedule, ScheduleRepository> {
             schedule.setShift(shift);
             schedule.setDepartmentId(department.getId());
             schedule.addDoctor(doctor);
-            return save(schedule);
+            save(schedule);
         } else {
             schedule.addDoctor(doctor);
-            return update(schedule);
+            update(schedule);
         }
     }
 

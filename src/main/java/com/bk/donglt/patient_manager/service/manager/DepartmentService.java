@@ -4,6 +4,7 @@ import com.bk.donglt.patient_manager.base.BaseService;
 import com.bk.donglt.patient_manager.dto.department.DepartmentDataDto;
 import com.bk.donglt.patient_manager.dto.manage.ManagerChangeDto;
 import com.bk.donglt.patient_manager.entity.hospital.Department;
+import com.bk.donglt.patient_manager.enums.Status;
 import com.bk.donglt.patient_manager.repository.DepartmentRepository;
 import com.bk.donglt.patient_manager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,11 @@ public class DepartmentService extends BaseService<Department, DepartmentReposit
     @Autowired
     private UserService userService;
 
-    Page<Department> findAvailable(Long hospitalId, Pageable pageRequest) {
+    public Page<Department> findSearchable(Long hospitalId, String name, Pageable pageRequest) {
+        return repository.findByHospitalIdAndNameContainingAndStatusNotAndIsDeletedFalse(hospitalId, name, Status.HIDDEN, pageRequest);
+    }
+
+    Page<Department> findAll(Long hospitalId, Pageable pageRequest) {
         return repository.findByHospitalIdAndIsDeletedFalse(hospitalId, pageRequest);
     }
 
@@ -41,10 +46,5 @@ public class DepartmentService extends BaseService<Department, DepartmentReposit
         processData(updateData);
         department.update(updateData);
         return update(department);
-    }
-
-    void activeDepartment(Department department, boolean active) {
-        department.setActive(active);
-        update(department);
     }
 }

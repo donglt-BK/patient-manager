@@ -4,6 +4,7 @@ import com.bk.donglt.patient_manager.dto.AddressDto;
 import com.bk.donglt.patient_manager.entity.User;
 import com.bk.donglt.patient_manager.entity.address.Location;
 import com.bk.donglt.patient_manager.entity.hospital.Hospital;
+import com.bk.donglt.patient_manager.enums.Status;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,11 +20,13 @@ public class HospitalDetailDto {
     private Location location;
     private List<User> managers;
     private AddressDto address;
+    private Status status;
 
     public HospitalDetailDto(Hospital hospital) {
         id = hospital.getId();
         name = hospital.getName();
         location = hospital.getLocation();
+        status = hospital.getStatus();
         if (hospital.getManagers() != null) {
             managers = new ArrayList<>(hospital.getManagers());
         } else {

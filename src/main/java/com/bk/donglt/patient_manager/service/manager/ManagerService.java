@@ -32,7 +32,7 @@ public class ManagerService extends BaseService<Doctor, DoctorRepository> {
 
     public Page<HospitalDto> getHospitals(Pageable pageable) {
         checkUserAuthorize();
-        return hospitalService.findAvailable(pageable).map(HospitalDto::new);
+        return hospitalService.findAll(pageable).map(HospitalDto::new);
     }
 
     public HospitalDetailDto getHospital(long hospitalId) {
@@ -57,11 +57,6 @@ public class ManagerService extends BaseService<Doctor, DoctorRepository> {
         return new HospitalDetailDto(hospitalService.updateManager(update));
     }
 
-    public void activeHospital(long hospitalId, boolean active) {
-        checkUserAuthorize();
-        hospitalService.activeHospital(hospitalId, active);
-    }
-
     public void deleteHospital(long hospitalId) {
         checkUserAuthorize();
         hospitalService.delete(hospitalId);
@@ -72,7 +67,7 @@ public class ManagerService extends BaseService<Doctor, DoctorRepository> {
         Hospital hospital = hospitalService.findById(hospitalId);
         checkUserAuthorize(hospital);
         return departmentService
-                .findAvailable(hospital.getId(), pageable)
+                .findAll(hospital.getId(), pageable)
                 .map(department -> new DepartmentDto(hospital, department));
     }
 
@@ -103,13 +98,6 @@ public class ManagerService extends BaseService<Doctor, DoctorRepository> {
         return new DepartmentDetailDto(hospital, departmentService.updateDepartment(department, update));
     }
 
-    public void activeDepartment(long departmentId, boolean active) {
-        Department department = departmentService.findById(departmentId);
-        Hospital hospital = hospitalService.findById(department.getHospitalId());
-        checkUserAuthorize(hospital);
-        departmentService.activeDepartment(department, active);
-    }
-
     public void deleteDepartment(long hospitalId, long departmentId) {
         Hospital hospital = hospitalService.findById(hospitalId);
         checkUserAuthorize(hospital);
@@ -120,7 +108,7 @@ public class ManagerService extends BaseService<Doctor, DoctorRepository> {
         Department department = departmentService.findById(departmentId);
         checkUserAuthorize(department);
         return doctorService
-                .findAvailable(department.getId(), pageable)
+                .findAll(department.getId(), pageable)
                 .map(doctor -> new DoctorDto(department, doctor));
     }
 
@@ -137,18 +125,11 @@ public class ManagerService extends BaseService<Doctor, DoctorRepository> {
         return new DoctorDto(department, doctorService.addDoctor(doctor));
     }
 
-    public DoctorDto updateLicense(DoctorDataDto update) {
+    public DoctorDto updateDoctor(DoctorDataDto update) {
         Doctor doctor = doctorService.findById(update.getId());
         Department department = departmentService.findById(doctor.getDepartmentId());
         checkUserAuthorize(department, doctor);
-        return new DoctorDto(department, doctorService.updateLicense(doctor, update));
-    }
-
-    public void activeDoctor(long doctorId, boolean active) {
-        Doctor doctor = doctorService.findById(doctorId);
-        Department department = departmentService.findById(doctor.getDepartmentId());
-        checkUserAuthorize(department);
-        doctorService.activeDoctor(doctor, active);
+        return new DoctorDto(department, doctorService.updateDoctor(doctor, update));
     }
 
     public void deleteDoctor(long departmentId, long doctorId) {

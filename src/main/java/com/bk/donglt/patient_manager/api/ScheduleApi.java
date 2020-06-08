@@ -39,10 +39,10 @@ public class ScheduleApi extends BaseResource<ScheduleService> {
     public ResponseEntity<Schedule> assign(
             @RequestParam(name = "date") String date,
             @RequestParam(name = "shift") Shift shift,
-            @RequestParam(name = "doctorId") Long doctorId) {
+            @RequestParam(name = "doctorIds") String doctorIds) {
 
         return ResponseEntity.ok().body(
-                service.assign(DateFormat.parseDate(date), shift, doctorId)
+                service.assign(DateFormat.parseDate(date), shift, doctorIds.split("\\|\\|"))
         );
     }
 
@@ -63,7 +63,7 @@ public class ScheduleApi extends BaseResource<ScheduleService> {
         return ResponseEntity.ok().body(service.findMySchedule(departmentId));
     }
 
-    @PostMapping("/change")
+    @PostMapping("/requestChange")
     public ResponseEntity<ScheduleChangeRequest> change(
             @RequestParam(name = "date") String date,
             @RequestParam(name = "shift") Shift shift,

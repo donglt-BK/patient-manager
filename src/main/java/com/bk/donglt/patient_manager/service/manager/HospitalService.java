@@ -4,6 +4,7 @@ import com.bk.donglt.patient_manager.base.BaseService;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDataDto;
 import com.bk.donglt.patient_manager.dto.manage.ManagerChangeDto;
 import com.bk.donglt.patient_manager.entity.hospital.Hospital;
+import com.bk.donglt.patient_manager.enums.Status;
 import com.bk.donglt.patient_manager.repository.HospitalRepository;
 import com.bk.donglt.patient_manager.service.UserService;
 import com.bk.donglt.patient_manager.service.address.AddressService;
@@ -20,7 +21,11 @@ public class HospitalService extends BaseService<Hospital, HospitalRepository> {
     @Autowired
     private UserService userService;
 
-    Page<Hospital> findAvailable(Pageable pageRequest) {
+    public Page<Hospital> findSearchable(String name, Pageable pageRequest) {
+        return repository.findByNameContainingAndStatusNotAndIsDeletedFalse(name, Status.HIDDEN, pageRequest);
+    }
+
+    Page<Hospital> findAll(Pageable pageRequest) {
         return repository.findByIsDeletedFalse(pageRequest);
     }
 
@@ -51,11 +56,5 @@ public class HospitalService extends BaseService<Hospital, HospitalRepository> {
         processData(updateData);
         hospital.update(updateData);
         return update(hospital);
-    }
-
-    void activeHospital(long hospitalId, boolean active) {
-        Hospital hospital = findById(hospitalId);
-        hospital.setActive(active);
-        update(hospital);
     }
 }

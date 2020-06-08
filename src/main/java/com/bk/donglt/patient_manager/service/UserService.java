@@ -11,6 +11,7 @@ import com.bk.donglt.patient_manager.repository.DoctorRepository;
 import com.bk.donglt.patient_manager.repository.HospitalRepository;
 import com.bk.donglt.patient_manager.repository.UserRepository;
 import com.bk.donglt.patient_manager.service.address.AddressService;
+import com.bk.donglt.patient_manager.service.schedule.RecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,9 @@ public class UserService extends BaseService<User, UserRepository> {
 
     @Autowired
     private DoctorRepository doctorRepository;
+
+    @Autowired
+    private RecordService recordService;
 
     public User findUser(String username) {
         return repository.findByUsernameAndIsDeletedFalse(username);
@@ -78,6 +82,8 @@ public class UserService extends BaseService<User, UserRepository> {
         userDetailDto.setManageDepartmentIds(departmentRepository.findManageDepartmentIdsByUser(id));
         userDetailDto.setDoctorIds(doctorRepository.findDoctorIdsByUserId(id));
         userDetailDto.setSystemAdmin(user.getRole().equals(Role.SYSTEM_ADMIN));
+
+        userDetailDto.setDoctorRequest(recordService.getRequest(id));
         return userDetailDto;
     }
 }

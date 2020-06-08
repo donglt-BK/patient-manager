@@ -4,6 +4,7 @@ import com.bk.donglt.patient_manager.base.BaseEntity;
 import com.bk.donglt.patient_manager.dto.department.DepartmentDataDto;
 import com.bk.donglt.patient_manager.dto.manage.ManagerChangeDto;
 import com.bk.donglt.patient_manager.entity.User;
+import com.bk.donglt.patient_manager.enums.Status;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,8 +21,8 @@ public class Department extends BaseEntity {
 
     private Long hospitalId;
 
-    @Column(name = "active")
-    private boolean isActive;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -32,7 +33,7 @@ public class Department extends BaseEntity {
     private Set<User> managers;
 
     public Department() {
-        isActive = true;
+        status = Status.UNAVAILABLE;
     }
 
     public boolean manageBy(Long userId) {

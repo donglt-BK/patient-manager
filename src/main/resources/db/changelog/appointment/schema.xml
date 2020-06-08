@@ -18,8 +18,13 @@
             <column name="schedule_id" type="int(11)"/>
             <column name="doctor_id" type="int(11)"/>
             <column name="record_id" type="int(11)"/>
-
         </createTable>
     </changeSet>
 
+    <changeSet id="add_columns_for_appointment" author="donglt">
+        <addColumn tableName="appointment">
+            <column name="receive" type="boolean" defaultValueBoolean="false"/>
+            <column name="cancel" type="boolean" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
