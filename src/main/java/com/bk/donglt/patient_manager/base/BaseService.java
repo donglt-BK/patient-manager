@@ -60,15 +60,28 @@ public abstract class BaseService<E extends BaseEntity, R extends BaseRepository
         }
     }
 
-    public boolean delete(Long id) {
-        E entity = findById(id);
-        if (entity == null) {
-            return false;
+    public List<E> update(List<E> entities) {
+        if (entities == null) {
+            return null;
         } else {
-            setUpdateUser(entity);
+            entities.forEach(this::setUpdateUser);
+            return repository.saveAll(entities);
+        }
+    }
+
+    public void delete(Long id) {
+        E entity = findById(id);
+        if (entity != null) {
             entity.setDeleted(true);
             update(entity);
-            return true;
+        }
+    }
+
+    public void delete(List<Long> ids) {
+        List<E> entities = findByIdIn(ids);
+        if (entities.size() != 0) {
+            entities.forEach(entity -> entity.setDeleted(true));
+            update(entities);
         }
     }
 
@@ -102,8 +115,9 @@ public abstract class BaseService<E extends BaseEntity, R extends BaseRepository
 
     /**
      * Throw {@link UnAuthorizeException} if
-     *  - not {@link Role#SYSTEM_ADMIN}
-     *  - or an manager of the hospital
+     * - not {@link Role#SYSTEM_ADMIN}
+     * - or an manager of the hospital
+     *
      * @param hospital the hospital need to check authorize of current user on it
      */
     public void checkUserAuthorize(Hospital hospital) {
@@ -112,9 +126,10 @@ public abstract class BaseService<E extends BaseEntity, R extends BaseRepository
 
     /**
      * Throw {@link UnAuthorizeException} if
-     *  - not {@link Role#SYSTEM_ADMIN}
-     *  - or a manager of the hospital of the department
-     *  - or a manager of the department
+     * - not {@link Role#SYSTEM_ADMIN}
+     * - or a manager of the hospital of the department
+     * - or a manager of the department
+     *
      * @param department the department need to check authorize of current user on it
      */
     public void checkUserAuthorize(Department department) {
@@ -124,13 +139,14 @@ public abstract class BaseService<E extends BaseEntity, R extends BaseRepository
 
     /**
      * Throw {@link UnAuthorizeException} if
-     *  - not {@link Role#SYSTEM_ADMIN}
-     *  - or a manager of the hospital of the department
-     *  - or a manager of the department
-     * @param hospital the hospital contain the department
-     * @param department the department need to check authorize of current user on it
+     * - not {@link Role#SYSTEM_ADMIN}
+     * - or a manager of the hospital of the department
+     * - or a manager of the department
      *
-     * use this methor instead of {@link #checkUserAuthorize(Department)} to avoid duplicate query to database
+     * @param hospital   the hospital contain the department
+     * @param department the department need to check authorize of current user on it
+     *                   <p>
+     *                   use this methor instead of {@link #checkUserAuthorize(Department)} to avoid duplicate query to database
      */
     public void checkUserAuthorize(Hospital hospital, Department department) {
         checkUserAuthorize(hospital, department, null);
@@ -139,14 +155,15 @@ public abstract class BaseService<E extends BaseEntity, R extends BaseRepository
 
     /**
      * Throw {@link UnAuthorizeException} if
-     *  - not {@link Role#SYSTEM_ADMIN}
-     *  - or a manager of the hospital of the department contain the doctor
-     *  - or a manager of the department contain the doctor
-     *  - or the doctor itself
-     * @param department the department contain the doctor
-     * @param doctor the doctor need to check authorize of current user on it
+     * - not {@link Role#SYSTEM_ADMIN}
+     * - or a manager of the hospital of the department contain the doctor
+     * - or a manager of the department contain the doctor
+     * - or the doctor itself
      *
-     * use this methor instead of {@link #checkUserAuthorize(Department)} to avoid duplicate query to database
+     * @param department the department contain the doctor
+     * @param doctor     the doctor need to check authorize of current user on it
+     *                   <p>
+     *                   use this methor instead of {@link #checkUserAuthorize(Department)} to avoid duplicate query to database
      */
     public void checkUserAuthorize(Department department, Doctor doctor) {
         Hospital hospital = hospitalService.findById(department.getHospitalId());

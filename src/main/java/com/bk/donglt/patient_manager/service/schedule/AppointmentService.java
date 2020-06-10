@@ -9,6 +9,7 @@ import com.bk.donglt.patient_manager.entity.Doctor;
 import com.bk.donglt.patient_manager.entity.hospital.Department;
 import com.bk.donglt.patient_manager.entity.hospital.Hospital;
 import com.bk.donglt.patient_manager.exception.BadRequestException;
+import com.bk.donglt.patient_manager.exception.UnAuthorizeException;
 import com.bk.donglt.patient_manager.repository.AppointmentRepository;
 import com.bk.donglt.patient_manager.service.UserService;
 import com.bk.donglt.patient_manager.service.manager.DepartmentService;
@@ -81,6 +82,9 @@ public class AppointmentService extends BaseService<Appointment, AppointmentRepo
 
     public Appointment receive(long appointmentId) {
         Appointment appointment = findById(appointmentId);
+        Doctor doctor = doctorService.findMeInDepartment(appointment.getSchedule().getDepartmentId());
+        if (!doctor.getId().equals(appointment.getDoctor().getId()))
+            throw new UnAuthorizeException();
         appointment.setReceived(true);
         return update(appointment);
     }
@@ -89,6 +93,8 @@ public class AppointmentService extends BaseService<Appointment, AppointmentRepo
         Appointment appointment = findById(appointmentId);
         if (appointment.isReceived() || appointment.getSchedule().getDate().before(new Date()))
             throw new BadRequestException("Appointment can NOT be canceled");
+        if (!appointment.getUser().getId().equals(getCurrentUser().getUser().getId()))
+            throw new UnAuthorizeException();
         appointment.setCanceled(true);
         return update(appointment);
     }

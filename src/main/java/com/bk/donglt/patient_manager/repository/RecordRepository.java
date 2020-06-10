@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RecordRepository extends BaseRepository<Record> {
-    Page<Record> findByPatient_IdAndIsDeletedFalse(Long id, Pageable pageable);
+    Page<Record> findByPatientIdAndIsDeletedFalse(Long id, Pageable pageable);
 }

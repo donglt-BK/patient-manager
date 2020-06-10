@@ -9,7 +9,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class TreatmentDto {
-    private long id;
+    private Long id;
     private TreatmentType type;
     private String description;
     private Date from;

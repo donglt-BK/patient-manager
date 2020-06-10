@@ -2,7 +2,8 @@ package com.bk.donglt.patient_manager.service.schedule;
 
 import com.bk.donglt.patient_manager.base.BaseService;
 import com.bk.donglt.patient_manager.dto.doctor.DoctorDto;
-import com.bk.donglt.patient_manager.dto.record.RecordDto;
+import com.bk.donglt.patient_manager.dto.record.RecordDataDto;
+import com.bk.donglt.patient_manager.entity.Appointment;
 import com.bk.donglt.patient_manager.entity.Doctor;
 import com.bk.donglt.patient_manager.entity.hospital.Department;
 import com.bk.donglt.patient_manager.entity.record.Record;
@@ -25,6 +26,15 @@ public class RecordService extends BaseService<Record, RecordRepository> {
 
     @Autowired
     private DepartmentService departmentService;
+
+    @Autowired
+    private AppointmentService appointmentService;
+
+    @Autowired
+    private SymptomService symptomService;
+
+    @Autowired
+    private ConclusionService conclusionService;
 
     private final Map<String, Date> recordPermission = new HashMap<>();
     private final Map<Long, Set<Long>> permissionRequest = new HashMap<>();
@@ -71,7 +81,7 @@ public class RecordService extends BaseService<Record, RecordRepository> {
         String key = userId + "||" + doctorId;
         recordPermission.put(key, calendar.getTime());
 
-        if(permissionRequest.containsKey(userId)) {
+        if (permissionRequest.containsKey(userId)) {
             Set<Long> userRequest = permissionRequest.get(userId);
             userRequest.remove(doctorId);
             permissionRequest.put(userId, userRequest);
@@ -81,18 +91,47 @@ public class RecordService extends BaseService<Record, RecordRepository> {
 
     public Page<Record> findMyRecord(Pageable pageable) {
         Long userId = getCurrentUser().getUser().getId();
-        return repository.findByPatient_IdAndIsDeletedFalse(userId, pageable);
+        return repository.findByPatientIdAndIsDeletedFalse(userId, pageable);
     }
 
     public Page<Record> findPatientRecord(long patientId, long departmentId, Pageable pageable) {
         Doctor doctor = doctorService.findMeInDepartment(departmentId);
         if (!havePermission(patientId, doctor.getId()))
             throw new BadRequestException("Doctor need permission for this record");
-        return repository.findByPatient_IdAndIsDeletedFalse(patientId, pageable);
+        return repository.findByPatientIdAndIsDeletedFalse(patientId, pageable);
     }
 
-    public Record save(RecordDto record) {
+    public Record create(RecordDataDto data) {
+        Record record = new Record();
 
-        return save(record);
+        if (data.getAppointmentId() != null) {
+            Appointment appointment = appointmentService.findById(data.getAppointmentId());
+            if (appointment.getRecord() != null) throw new BadRequestException("Appointment already have record");
+            record.setAppointment(appointment);
+        }
+
+        record.setPatientId(data.getPatientId());
+        record.setDoctorId(data.getDoctorId());
+
+        Record savedRecord = save(record);
+
+        symptomService.createSymptom(record, data.getSymptoms());
+        conclusionService.createConclusion(record, data.getConclusions());
+
+        return savedRecord;
     }
+
+    public Record update(RecordDataDto data) {
+        Record record = findById(data.getId());
+
+        symptomService.updateSymptom(record, data.getSymptoms());
+        symptomService.delete(data.getRemoveSymptoms());
+
+        conclusionService.updateConclusion(record, data.getConclusions());
+        conclusionService.delete(data.getRemoveConclusions());
+
+        return record;
+    }
+
+
 }

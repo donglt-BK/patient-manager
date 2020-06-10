@@ -1,6 +1,5 @@
 package com.bk.donglt.patient_manager.dto;
 
-import com.bk.donglt.patient_manager.base.BaseEntity;
 import com.bk.donglt.patient_manager.dto.department.DepartmentDetailDto;
 import com.bk.donglt.patient_manager.dto.doctor.DoctorDto;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDetailDto;
@@ -13,7 +12,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class AppointmentDto extends BaseEntity {
+public class AppointmentDto {
     private long id;
 
     private UserDataDto user;

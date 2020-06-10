@@ -1,6 +1,7 @@
 package com.bk.donglt.patient_manager.api;
 
 import com.bk.donglt.patient_manager.base.BaseResource;
+import com.bk.donglt.patient_manager.dto.record.RecordDataDto;
 import com.bk.donglt.patient_manager.entity.record.Record;
 import com.bk.donglt.patient_manager.service.schedule.RecordService;
 import org.springframework.data.domain.Page;
@@ -30,5 +31,15 @@ public class RecordApi extends BaseResource<RecordService> {
     public ResponseEntity<Void> grantPermission(@RequestParam("doctorId") long doctorId) {
         service.grantPermission(doctorId);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<Record> create(@RequestBody RecordDataDto dataDto) {
+        return ResponseEntity.ok().body(service.create(dataDto));
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<Record> update(@RequestBody RecordDataDto dataDto) {
+        return ResponseEntity.ok().body(service.update(dataDto));
     }
 }

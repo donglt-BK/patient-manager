@@ -14,8 +14,19 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+  servlet:
+    multipart:
+      max-file-size: -1
+      max-request-size: -1
+
 server:
   port: 8100
 
 authorize:
   enable: false
+
+app:
+  file-upload:
+    folder: C:\Users\AD\Desktop\patient-manager-file\
+

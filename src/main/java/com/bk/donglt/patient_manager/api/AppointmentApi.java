@@ -39,11 +39,27 @@ public class AppointmentApi extends BaseResource<AppointmentService> {
         return ResponseEntity.ok().body(service.findDoctor(departmentId, name, getPageable(page, size)));
     }
 
-    @GetMapping("/list")
-    public ResponseEntity<Page<Appointment>> list(
+    @GetMapping("/myAppointment")
+    public ResponseEntity<Page<Appointment>> myAppointment(
             @RequestParam(name = "page", required = false, defaultValue = "1") int page,
             @RequestParam(name = "size", required = false, defaultValue = "10") int size) {
         return ResponseEntity.ok().body(service.listMyAppointment(getPageable(page, size)));
+    }
+
+    @GetMapping("/doctorAppointment")
+    public ResponseEntity<Page<Appointment>> doctorAppointment(
+            @RequestParam(name = "departmentId") Long departmentId,
+            @RequestParam(name = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10") int size) {
+        return ResponseEntity.ok().body(service.listDoctorAppointment(departmentId, getPageable(page, size)));
+    }
+
+    @GetMapping("/departmentAppointment")
+    public ResponseEntity<Page<Appointment>> departmentAppointment(
+            @RequestParam(name = "departmentId") Long departmentId,
+            @RequestParam(name = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10") int size) {
+        return ResponseEntity.ok().body(service.listDepartmentAppointment(departmentId, getPageable(page, size)));
     }
 
     @PostMapping("/book")
@@ -52,6 +68,21 @@ public class AppointmentApi extends BaseResource<AppointmentService> {
             @RequestParam(name = "doctorId", required = false) Long doctorId) {
         return ResponseEntity.ok().body(
                 service.book(scheduleId, doctorId)
+        );
+    }
+
+    @PostMapping("/receive")
+    public ResponseEntity<Appointment> receive(@RequestParam(name = "appointmentId") Long appointmentId) {
+        return ResponseEntity.ok().body(
+                service.receive(appointmentId)
+        );
+    }
+
+
+    @PostMapping("/cancel")
+    public ResponseEntity<Appointment> cancel(@RequestParam(name = "appointmentId") Long appointmentId) {
+        return ResponseEntity.ok().body(
+                service.cancel(appointmentId)
         );
     }
 }

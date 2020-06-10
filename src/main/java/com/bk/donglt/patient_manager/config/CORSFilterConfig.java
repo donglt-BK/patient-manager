@@ -39,9 +39,7 @@ public class CORSFilterConfig implements Filter {
             LOGGER.info("Response preflight request {}", request.getServletPath());
             return;
         }
-
         chain.doFilter(req, res);
-
     }
 
     @Override
