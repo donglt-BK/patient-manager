@@ -45,4 +45,13 @@
             <column name="description" type="varchar(2000)"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="change_location_type" author="donglt">
+        <dropColumn tableName="hospital" columnName="latitude"/>
+        <dropColumn tableName="hospital" columnName="longitude"/>
+        <addColumn tableName="hospital">
+            <column name="latitude" type="varchar(200)"/>
+            <column name="longitude" type="varchar(200)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

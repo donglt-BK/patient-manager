@@ -12,8 +12,8 @@ public class HospitalDataDto {
     private Long id;
     private String name;
     private String description;
-    private Long latitude;
-    private Long longitude;
+    private String latitude;
+    private String longitude;
     private AddressDto addressId;
     private Status status;
 
