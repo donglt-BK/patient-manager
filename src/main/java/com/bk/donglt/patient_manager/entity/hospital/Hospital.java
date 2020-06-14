@@ -50,6 +50,7 @@ public class Hospital extends BaseEntity {
     }
 
     public void update(HospitalDataDto update) {
+        status = update.getStatus();
         if (update.getName() != null) name = update.getName();
         if (update.getDescription() != null) description = update.getDescription();
 

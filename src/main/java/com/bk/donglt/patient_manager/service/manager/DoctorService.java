@@ -33,10 +33,12 @@ public class DoctorService extends BaseService<Doctor, DoctorRepository> {
         doctor.setUser(userService.findById(newData.getUserId()));
         doctor.setLicenseImageUrl(newData.getLicenceUrl());
         doctor.setDepartmentId(newData.getDepartmentId());
+        doctor.setStatus(newData.getStatus());
         return save(doctor);
     }
 
     Doctor updateDoctor(Doctor doctor, DoctorDataDto update) {
+        doctor.setStatus(update.getStatus());
         doctor.setLicenseImageUrl(update.getLicenceUrl());
         return update(doctor);
     }

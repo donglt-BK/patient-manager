@@ -2,12 +2,10 @@ package com.bk.donglt.patient_manager.service.manager;
 
 import com.bk.donglt.patient_manager.base.BaseService;
 import com.bk.donglt.patient_manager.dto.department.DepartmentDataDto;
-import com.bk.donglt.patient_manager.dto.department.DepartmentDetailDto;
 import com.bk.donglt.patient_manager.dto.department.DepartmentDto;
 import com.bk.donglt.patient_manager.dto.doctor.DoctorDataDto;
 import com.bk.donglt.patient_manager.dto.doctor.DoctorDto;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDataDto;
-import com.bk.donglt.patient_manager.dto.hospital.HospitalDetailDto;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDto;
 import com.bk.donglt.patient_manager.dto.manage.ManagerChangeDto;
 import com.bk.donglt.patient_manager.entity.Doctor;
@@ -35,26 +33,26 @@ public class ManagerService extends BaseService<Doctor, DoctorRepository> {
         return hospitalService.findAll(pageable).map(HospitalDto::new);
     }
 
-    public HospitalDetailDto getHospital(long hospitalId) {
+    public HospitalDto getHospital(long hospitalId) {
         Hospital hospital = hospitalService.findById(hospitalId);
         checkUserAuthorize(hospital);
-        return new HospitalDetailDto(hospital);
+        return new HospitalDto(hospital);
     }
 
-    public HospitalDetailDto addHospital(HospitalDataDto hospital) {
+    public HospitalDto addHospital(HospitalDataDto hospital) {
         checkUserAuthorize();
-        return new HospitalDetailDto(hospitalService.addHospital(hospital));
+        return new HospitalDto(hospitalService.addHospital(hospital));
     }
 
-    public HospitalDetailDto updateHospital(HospitalDataDto update) {
+    public HospitalDto updateHospital(HospitalDataDto update) {
         Hospital hospital = hospitalService.findById(update.getId());
         checkUserAuthorize(hospital);
-        return new HospitalDetailDto(hospitalService.updateHospital(hospital, update));
+        return new HospitalDto(hospitalService.updateHospital(hospital, update));
     }
 
-    public HospitalDetailDto updateHospitalManager(ManagerChangeDto update) {
+    public HospitalDto updateHospitalManager(ManagerChangeDto update) {
         checkUserAuthorize();
-        return new HospitalDetailDto(hospitalService.updateManager(update));
+        return new HospitalDto(hospitalService.updateManager(update));
     }
 
     public void deleteHospital(long hospitalId) {
@@ -71,31 +69,31 @@ public class ManagerService extends BaseService<Doctor, DoctorRepository> {
                 .map(department -> new DepartmentDto(hospital, department));
     }
 
-    public DepartmentDetailDto getDepartment(long departmentId) {
+    public DepartmentDto getDepartment(long departmentId) {
         Department department = departmentService.findById(departmentId);
         Hospital hospital = hospitalService.findById(department.getHospitalId());
         checkUserAuthorize(hospital, department);
-        return new DepartmentDetailDto(hospital, department);
+        return new DepartmentDto(hospital, department);
     }
 
-    public DepartmentDetailDto addDepartment(DepartmentDataDto department) {
+    public DepartmentDto addDepartment(DepartmentDataDto department) {
         Hospital hospital = hospitalService.findById(department.getHospitalId());
         checkUserAuthorize(hospital);
-        return new DepartmentDetailDto(hospital, departmentService.addDepartment(department));
+        return new DepartmentDto(hospital, departmentService.addDepartment(department));
     }
 
-    public DepartmentDetailDto updateDepartment(DepartmentDataDto update) {
+    public DepartmentDto updateDepartment(DepartmentDataDto update) {
         Department department = departmentService.findById(update.getId());
         Hospital hospital = hospitalService.findById(department.getHospitalId());
         checkUserAuthorize(hospital, department);
-        return new DepartmentDetailDto(hospital, departmentService.updateDepartment(department, update));
+        return new DepartmentDto(hospital, departmentService.updateDepartment(department, update));
     }
 
-    public DepartmentDetailDto updateDepartmentManager(ManagerChangeDto update) {
+    public DepartmentDto updateDepartmentManager(ManagerChangeDto update) {
         Department department = departmentService.findById(update.getDepartmentId());
         Hospital hospital = hospitalService.findById(department.getHospitalId());
         checkUserAuthorize(hospital);
-        return new DepartmentDetailDto(hospital, departmentService.updateDepartment(department, update));
+        return new DepartmentDto(hospital, departmentService.updateDepartment(department, update));
     }
 
     public void deleteDepartment(long hospitalId, long departmentId) {

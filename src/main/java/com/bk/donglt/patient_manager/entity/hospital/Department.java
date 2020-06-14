@@ -44,6 +44,7 @@ public class Department extends BaseEntity {
     }
 
     public void update(DepartmentDataDto update) {
+        status = update.getStatus();
         if (update.getDescription() != null)
             description = update.getDescription();
 

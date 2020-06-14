@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface FileUploadRepository extends BaseRepository<FileUpload> {
     List<FileUpload> findByOwnerAndIsDeletedFalse(String owner);
+
+    FileUpload findByFile(String file);
 }

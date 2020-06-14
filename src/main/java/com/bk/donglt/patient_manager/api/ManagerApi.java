@@ -2,12 +2,10 @@ package com.bk.donglt.patient_manager.api;
 
 import com.bk.donglt.patient_manager.base.BaseResource;
 import com.bk.donglt.patient_manager.dto.department.DepartmentDataDto;
-import com.bk.donglt.patient_manager.dto.department.DepartmentDetailDto;
 import com.bk.donglt.patient_manager.dto.department.DepartmentDto;
 import com.bk.donglt.patient_manager.dto.doctor.DoctorDataDto;
 import com.bk.donglt.patient_manager.dto.doctor.DoctorDto;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDataDto;
-import com.bk.donglt.patient_manager.dto.hospital.HospitalDetailDto;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDto;
 import com.bk.donglt.patient_manager.dto.manage.ManagerChangeDto;
 import com.bk.donglt.patient_manager.service.manager.ManagerService;
@@ -26,22 +24,22 @@ public class ManagerApi extends BaseResource<ManagerService> {
     }
 
     @GetMapping("/hospital/detail")
-    public ResponseEntity<HospitalDetailDto> detailHospital(@RequestParam("id") long id) {
+    public ResponseEntity<HospitalDto> detailHospital(@RequestParam("id") long id) {
         return ResponseEntity.ok().body(service.getHospital(id));
     }
 
     @PostMapping("/hospital/add")
-    public ResponseEntity<HospitalDetailDto> addHospital(@RequestBody HospitalDataDto hospital) {
+    public ResponseEntity<HospitalDto> addHospital(@RequestBody HospitalDataDto hospital) {
         return ResponseEntity.ok().body(service.addHospital(hospital));
     }
 
     @PostMapping("/hospital/update")
-    public ResponseEntity<HospitalDetailDto> updateHospital(@RequestBody HospitalDataDto update) {
+    public ResponseEntity<HospitalDto> updateHospital(@RequestBody HospitalDataDto update) {
         return ResponseEntity.ok().body(service.updateHospital(update));
     }
 
     @PostMapping("/hospital/changeManager")
-    public ResponseEntity<HospitalDetailDto> updateHospitalManager(@RequestBody ManagerChangeDto update) {
+    public ResponseEntity<HospitalDto> updateHospitalManager(@RequestBody ManagerChangeDto update) {
         return ResponseEntity.ok().body(service.updateHospitalManager(update));
     }
 
@@ -60,23 +58,23 @@ public class ManagerApi extends BaseResource<ManagerService> {
     }
 
     @GetMapping("/department/detail")
-    public ResponseEntity<DepartmentDetailDto> addDepartment(
+    public ResponseEntity<DepartmentDto> addDepartment(
             @RequestParam("id") long departmentId) {
         return ResponseEntity.ok().body(service.getDepartment(departmentId));
     }
 
     @PostMapping("/department/add")
-    public ResponseEntity<DepartmentDetailDto> addDepartment(@RequestBody DepartmentDataDto department) {
+    public ResponseEntity<DepartmentDto> addDepartment(@RequestBody DepartmentDataDto department) {
         return ResponseEntity.ok().body(service.addDepartment(department));
     }
 
     @PostMapping("/department/update")
-    public ResponseEntity<DepartmentDetailDto> updateDepartment(@RequestBody DepartmentDataDto update) {
+    public ResponseEntity<DepartmentDto> updateDepartment(@RequestBody DepartmentDataDto update) {
         return ResponseEntity.ok().body(service.updateDepartment(update));
     }
 
     @PostMapping("/department/changeManager")
-    public ResponseEntity<DepartmentDetailDto> updateDepartmentManager(@RequestBody ManagerChangeDto update) {
+    public ResponseEntity<DepartmentDto> updateDepartmentManager(@RequestBody ManagerChangeDto update) {
         return ResponseEntity.ok().body(service.updateDepartmentManager(update));
     }
 

@@ -10,8 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -61,32 +59,28 @@ public class FileUploadService extends BaseService<FileUpload, FileUploadReposit
                 .collect(Collectors.joining("||"));
     }
 
-    private void saveFiles(String key, Long id, String files) {
-        List<FileUpload> currentFiles = getFiles(key, id);
-        String[] split = files.split("\\|\\|");
-        List<String> saveFiles = Arrays.asList(split);
-
-        List<Long> deletedFiles = new LinkedList<>();
-        for (FileUpload currentFile : currentFiles) {
-            if (saveFiles.contains(currentFile.getFile())) {
-                saveFiles.remove(currentFile.getFile());
-            } else {
-                deletedFiles.add(currentFile.getId());
-            }
-        }
-
-        save(saveFiles.stream()
-                .map(file -> new FileUpload(key + id, file))
-                .collect(Collectors.toList())
-        );
-        delete(deletedFiles);
+    private void addFile(String key, Long id, String file) {
+        save(new FileUpload(key + id, file));
     }
 
-    public void saveDepartmentFiles(Long departmentId, String files) {
-        saveFiles("dept_", departmentId, files);
+    public void addDepartmentFile(Long departmentId, String file) {
+        addFile("dept_", departmentId, file);
     }
 
-    public void saveHospitalFiles(Long hospitalId, String files) {
-        saveFiles("hos_", hospitalId, files);
+    public void addHospitalFile(Long hospitalId, String file) {
+        addFile("hos_", hospitalId, file);
+    }
+
+    private void deleteFiles(String key, Long id, String file) {
+        FileUpload fileUpload = repository.findByFile(file);
+        delete(fileUpload.getId());
+    }
+
+    public void deleteDepartmentFile(Long departmentId, String file) {
+        deleteFiles("dept_", departmentId, file);
+    }
+
+    public void deleteHospitalFile(Long hospitalId, String file) {
+        deleteFiles("hos_", hospitalId, file);
     }
 }

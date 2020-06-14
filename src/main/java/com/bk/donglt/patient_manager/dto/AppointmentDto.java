@@ -1,8 +1,8 @@
 package com.bk.donglt.patient_manager.dto;
 
-import com.bk.donglt.patient_manager.dto.department.DepartmentDetailDto;
+import com.bk.donglt.patient_manager.dto.department.DepartmentDto;
 import com.bk.donglt.patient_manager.dto.doctor.DoctorDto;
-import com.bk.donglt.patient_manager.dto.hospital.HospitalDetailDto;
+import com.bk.donglt.patient_manager.dto.hospital.HospitalDto;
 import com.bk.donglt.patient_manager.dto.user.UserDataDto;
 import com.bk.donglt.patient_manager.enums.Shift;
 import lombok.Getter;
@@ -20,8 +20,8 @@ public class AppointmentDto {
     private Date date;
     private Shift shift;
 
-    private HospitalDetailDto hospital;
-    private DepartmentDetailDto department;
+    private HospitalDto hospital;
+    private DepartmentDto department;
     private DoctorDto doctor;
 
     private Long recordId;
