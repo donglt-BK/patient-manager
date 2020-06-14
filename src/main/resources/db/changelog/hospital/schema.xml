@@ -39,4 +39,10 @@
             <column name="status" type="varchar(200)"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="add_hospital_description" author="donglt">
+        <addColumn tableName="hospital">
+            <column name="description" type="varchar(2000)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

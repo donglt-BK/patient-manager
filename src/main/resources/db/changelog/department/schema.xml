@@ -32,4 +32,9 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="add_department_description" author="donglt">
+        <addColumn tableName="department">
+            <column name="description" type="varchar(2000)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

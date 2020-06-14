@@ -48,4 +48,45 @@
             <column name="approve" type="boolean" defaultValueBoolean="false"/>
         </addColumn>
     </changeSet>
+
+
+    <changeSet id="add_new_column_for_schedule" author="donglt">
+        <addColumn tableName="schedule">
+            <column name="schedule_limit" type="int(11)"/>
+            <column name="doctor_limit" type="int(11)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add_table_schedule_status" author="donglt">
+        <createTable tableName="schedule_status">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="created_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_by_user_id" type="varchar(50)"/>
+            <column name="created_by_user_id" type="varchar(50)"/>
+            <column name="is_deleted" type="boolean" defaultValueBoolean="false"/>
+
+            <column name="schedule_id" type="int(11)"/>
+            <column name="current_book" type="int(11)" defaultValue="0"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add_table_doctor_schedule_status" author="donglt">
+        <createTable tableName="doctor_schedule_status">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="created_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_by_user_id" type="varchar(50)"/>
+            <column name="created_by_user_id" type="varchar(50)"/>
+            <column name="is_deleted" type="boolean" defaultValueBoolean="false"/>
+
+            <column name="schedule_id" type="int(11)"/>
+            <column name="doctor_id" type="int(11)"/>
+            <column name="current_book" type="int(11)" defaultValue="0"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

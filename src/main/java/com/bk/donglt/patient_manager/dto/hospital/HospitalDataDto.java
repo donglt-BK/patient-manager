@@ -11,6 +11,7 @@ import lombok.Setter;
 public class HospitalDataDto {
     private Long id;
     private String name;
+    private String description;
     private Long latitude;
     private Long longitude;
     private AddressDto addressId;

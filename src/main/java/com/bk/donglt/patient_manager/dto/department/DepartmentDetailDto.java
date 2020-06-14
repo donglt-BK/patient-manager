@@ -16,6 +16,7 @@ import java.util.List;
 public class DepartmentDetailDto {
     private Long id;
     private String name;
+    private String description;
     private Long hospitalId;
     private String hospitalName;
     private Status status;
@@ -24,6 +25,7 @@ public class DepartmentDetailDto {
     public DepartmentDetailDto(Hospital hospital, Department department) {
         id = department.getId();
         name = department.getName();
+        description = department.getDescription();
         hospitalId = hospital.getId();
         hospitalName = hospital.getName();
         status = department.getStatus();

@@ -39,10 +39,14 @@ public class ScheduleApi extends BaseResource<ScheduleService> {
     public ResponseEntity<Schedule> assign(
             @RequestParam(name = "date") String date,
             @RequestParam(name = "shift") Shift shift,
+            @RequestParam(name = "scheduleLimit") int scheduleLimit,
+            @RequestParam(name = "doctorLimit") int doctorLimit,
             @RequestParam(name = "doctorIds") String doctorIds) {
 
         return ResponseEntity.ok().body(
-                service.assign(DateFormat.parseDate(date), shift, doctorIds.split("\\|\\|"))
+                service.assign(DateFormat.parseDate(date), shift,
+                        scheduleLimit, doctorLimit,
+                        doctorIds.split("\\|\\|"))
         );
     }
 

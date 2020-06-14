@@ -31,8 +31,11 @@ public class Schedule extends BaseEntity {
     )
     private Set<Doctor> doctors;
 
-    @Column(name = "`limit`")
-    private int patientPerDoctor;
+    @Column(name = "schedule_limit")
+    private int scheduleLimit;
+
+    @Column(name = "doctor_limit")
+    private int doctorLimit;
 
     public void addDoctor(Doctor doctor) {
         if (doctors == null) doctors = new HashSet<>();
@@ -47,6 +50,13 @@ public class Schedule extends BaseEntity {
         if (doctors == null) return false;
         for (Doctor d : doctors) {
             if (d.getId().equals(doctor.getId())) return true;
+        }
+        return false;
+    }
+
+    public boolean contain(Long doctorId) {
+        for (Doctor d : doctors) {
+            if (d.getId().equals(doctorId)) return true;
         }
         return false;
     }

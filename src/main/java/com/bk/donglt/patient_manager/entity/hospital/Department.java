@@ -18,6 +18,7 @@ import java.util.Set;
 @Table(name = "department")
 public class Department extends BaseEntity {
     private String name;
+    private String description;
 
     private Long hospitalId;
 
@@ -43,11 +44,14 @@ public class Department extends BaseEntity {
     }
 
     public void update(DepartmentDataDto update) {
-        if (update.getHospitalId() != null)
-            hospitalId = update.getHospitalId();
+        if (update.getDescription() != null)
+            description = update.getDescription();
 
         if (update.getName() != null)
             name = update.getName();
+
+        if (update.getHospitalId() != null)
+            hospitalId = update.getHospitalId();
     }
 
     public void update(ManagerChangeDto update) {

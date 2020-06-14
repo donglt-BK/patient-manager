@@ -6,8 +6,7 @@ import com.bk.donglt.patient_manager.dto.doctor.DoctorDto;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDto;
 import com.bk.donglt.patient_manager.entity.Appointment;
 import com.bk.donglt.patient_manager.entity.Doctor;
-import com.bk.donglt.patient_manager.entity.hospital.Department;
-import com.bk.donglt.patient_manager.entity.hospital.Hospital;
+import com.bk.donglt.patient_manager.entity.hospital.*;
 import com.bk.donglt.patient_manager.exception.BadRequestException;
 import com.bk.donglt.patient_manager.exception.UnAuthorizeException;
 import com.bk.donglt.patient_manager.repository.AppointmentRepository;
@@ -38,6 +37,12 @@ public class AppointmentService extends BaseService<Appointment, AppointmentRepo
 
     @Autowired
     private DoctorService doctorService;
+
+    @Autowired
+    private ScheduleStatusService scheduleStatusService;
+
+    @Autowired
+    private DoctorScheduleStatusService doctorScheduleStatusService;
 
     //-----------------------------------------------find-------------------------------------------------------
     public Page<HospitalDto> findHospital(String name, Pageable pageable) {
@@ -73,8 +78,22 @@ public class AppointmentService extends BaseService<Appointment, AppointmentRepo
     public Appointment book(long scheduleId, Long doctorId) {
         Appointment appointment = new Appointment();
         appointment.setUser(userService.findById(getCurrentUser().getUser().getId()));
-        appointment.setSchedule(scheduleService.findById(scheduleId));
+
+        Schedule schedule = scheduleService.findById(scheduleId);
+        ScheduleStatus scheduleStatus = scheduleStatusService.findByScheduleId(scheduleId);
+        if (schedule.getScheduleLimit() == scheduleStatus.getCurrentBook())
+            throw new BadRequestException("Schedule is full");
+        scheduleStatusService.increase(scheduleStatus);
+        appointment.setSchedule(schedule);
+
         if (doctorId != null) {
+            if (!schedule.contain(doctorId))
+                throw new BadRequestException("Doctor not working in this schedule");
+
+            DoctorScheduleStatus doctorScheduleStatus = doctorScheduleStatusService.findByScheduleIdAndDoctorId(scheduleId, doctorId);
+            if (schedule.getDoctorLimit() == doctorScheduleStatus.getCurrentBook())
+                throw new BadRequestException("Doctor schedule is full");
+            doctorScheduleStatusService.increase(doctorScheduleStatus);
             appointment.setDoctor(doctorService.findById(doctorId));
         }
         return save(appointment);

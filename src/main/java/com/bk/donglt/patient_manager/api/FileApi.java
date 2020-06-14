@@ -20,10 +20,21 @@ public class FileApi {
         return fileUploadService.upload(request, file);
     }
 
-
     @GetMapping("/get/{fileUrl}")
     @ResponseBody
     public FileSystemResource upload(@PathVariable String fileUrl) {
         return new FileSystemResource(fileUploadService.load(fileUrl));
+    }
+
+    @GetMapping("/department")
+    @ResponseBody
+    public String getDepartmentFiles(@RequestParam("departmentId") Long departmentId) {
+        return fileUploadService.getDepartmentFiles(departmentId);
+    }
+
+    @GetMapping("/hospital")
+    @ResponseBody
+    public String getHospitalFiles(@RequestParam("hospitalId") Long hospitalId) {
+        return fileUploadService.getHospitalFiles(hospitalId);
     }
 }

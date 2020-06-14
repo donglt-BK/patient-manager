@@ -20,6 +20,7 @@ import java.util.Set;
 @Table(name = "hospital")
 public class Hospital extends BaseEntity {
     private String name;
+    private String description;
 
     @Embedded
     private Address address;
@@ -50,6 +51,7 @@ public class Hospital extends BaseEntity {
 
     public void update(HospitalDataDto update) {
         if (update.getName() != null) name = update.getName();
+        if (update.getDescription() != null) description = update.getDescription();
 
         if (update.getLatitude() != null) {
             if (location == null) location = new Location();

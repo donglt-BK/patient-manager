@@ -17,14 +17,16 @@ import java.util.List;
 public class HospitalDetailDto {
     private Long id;
     private String name;
+    private String description;
     private Location location;
+    private Status status;
     private List<User> managers;
     private AddressDto address;
-    private Status status;
 
     public HospitalDetailDto(Hospital hospital) {
         id = hospital.getId();
         name = hospital.getName();
+        description = hospital.getDescription();
         location = hospital.getLocation();
         status = hospital.getStatus();
         if (hospital.getManagers() != null) {

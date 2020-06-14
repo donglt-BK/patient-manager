@@ -10,6 +10,7 @@ public class DepartmentDataDto {
     private Long id;
     private Long hospitalId;
     private String name;
+    private String description;
     private Status status;
 
 }

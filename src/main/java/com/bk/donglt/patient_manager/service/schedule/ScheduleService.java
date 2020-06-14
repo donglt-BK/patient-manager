@@ -29,14 +29,19 @@ public class ScheduleService extends BaseService<Schedule, ScheduleRepository> {
     @Autowired
     private ScheduleChangeRequestService scheduleChangeRequestService;
 
+    @Autowired
+    private ScheduleStatusService scheduleStatusService;
+
+    @Autowired
+    private DoctorScheduleStatusService doctorScheduleStatusService;
+
     public List<Schedule> findSchedules(Long departmentId, Date start, Date end) {
         Department department = departmentService.findById(departmentId);
         checkUserAuthorize(department);
         return repository.findByDateBetweenAndDepartmentIdAndIsDeletedFalse(start, end, departmentId);
     }
 
-    public Schedule assign(Date date, Shift shift, String[] doctorIds) {
-
+    public Schedule assign(Date date, Shift shift, int scheduleLimit, int doctorLimit, String[] doctorIds) {
         List<Doctor> doctors = doctorService.findByIdIn(Arrays.stream(doctorIds).map(Long::valueOf).collect(Collectors.toList()));
         if (doctors.size() == 0) throw new BadRequestException("No doctor found");
 
@@ -48,13 +53,19 @@ public class ScheduleService extends BaseService<Schedule, ScheduleRepository> {
             schedule.setDate(date);
             schedule.setShift(shift);
             schedule.setDepartmentId(department.getId());
+            schedule = save(schedule);
+
+            scheduleStatusService.create(schedule.getId());
         }
+        schedule.setScheduleLimit(scheduleLimit);
+        schedule.setDoctorLimit(doctorLimit);
+        doctorScheduleStatusService.create(schedule.getId(), doctors);
         for (Doctor doctor : doctors) {
             if (!doctor.getDepartmentId().equals(department.getId()))
                 throw new BadRequestException("Doctors not in same department");
             schedule.addDoctor(doctor);
         }
-        return schedule;
+        return update(schedule);
     }
 
     void createSchedule(Date date, Shift shift, Doctor doctor, Department department) {
@@ -64,12 +75,15 @@ public class ScheduleService extends BaseService<Schedule, ScheduleRepository> {
             schedule.setDate(date);
             schedule.setShift(shift);
             schedule.setDepartmentId(department.getId());
-            schedule.addDoctor(doctor);
+            schedule.setDoctorLimit(30);
+            schedule.setScheduleLimit(50);
             save(schedule);
-        } else {
-            schedule.addDoctor(doctor);
-            update(schedule);
+
+            scheduleStatusService.create(schedule.getId());
         }
+        doctorScheduleStatusService.create(schedule.getId(), doctor);
+        schedule.addDoctor(doctor);
+        update(schedule);
     }
 
     public Schedule deAssign(Date date, Shift shift, Long doctorId) {
