@@ -43,5 +43,9 @@
             <column name="email" type="varchar(255)"/>
         </createTable>
     </changeSet>
-
+    <changeSet id="add_ava_column" author="donglt">
+        <addColumn tableName="user">
+            <column name="avatar" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

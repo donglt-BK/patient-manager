@@ -1,11 +1,9 @@
 package com.bk.donglt.patient_manager.service.schedule;
 
 import com.bk.donglt.patient_manager.base.BaseService;
-import com.bk.donglt.patient_manager.dto.doctor.DoctorDto;
 import com.bk.donglt.patient_manager.dto.record.RecordDataDto;
 import com.bk.donglt.patient_manager.entity.Appointment;
 import com.bk.donglt.patient_manager.entity.Doctor;
-import com.bk.donglt.patient_manager.entity.hospital.Department;
 import com.bk.donglt.patient_manager.entity.record.Record;
 import com.bk.donglt.patient_manager.exception.BadRequestException;
 import com.bk.donglt.patient_manager.repository.RecordRepository;
@@ -15,9 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class RecordService extends BaseService<Record, RecordRepository> {
@@ -36,7 +31,7 @@ public class RecordService extends BaseService<Record, RecordRepository> {
     @Autowired
     private ConclusionService conclusionService;
 
-    private final Map<String, Date> recordPermission = new HashMap<>();
+    /*private final Map<String, Date> recordPermission = new HashMap<>();
     private final Map<Long, Set<Long>> permissionRequest = new HashMap<>();
 
     private boolean havePermission(long patientId, long doctorId) {
@@ -87,7 +82,7 @@ public class RecordService extends BaseService<Record, RecordRepository> {
             permissionRequest.put(userId, userRequest);
         }
         //TODO send socket notify to doctor
-    }
+    }*/
 
     public Page<Record> findMyRecord(Pageable pageable) {
         Long userId = getCurrentUser().getUser().getId();
@@ -96,8 +91,9 @@ public class RecordService extends BaseService<Record, RecordRepository> {
 
     public Page<Record> findPatientRecord(long patientId, long departmentId, Pageable pageable) {
         Doctor doctor = doctorService.findMeInDepartment(departmentId);
-        if (!havePermission(patientId, doctor.getId()))
+        /*if (!havePermission(patientId, doctor.getId()))
             throw new BadRequestException("Doctor need permission for this record");
+        */
         return repository.findByPatientIdAndIsDeletedFalse(patientId, pageable);
     }
 

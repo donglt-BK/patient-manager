@@ -12,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class DoctorService extends BaseService<Doctor, DoctorRepository> {
     @Autowired
@@ -25,15 +27,23 @@ public class DoctorService extends BaseService<Doctor, DoctorRepository> {
         return repository.findByDepartmentIdAndIsDeletedFalse(departmentId, pageRequest);
     }
 
-    Doctor addDoctor(DoctorDataDto newData) {
-        Doctor doctor = repository.findByUser_IdAndDepartmentIdAndIsDeletedFalse(newData.getUserId(), newData.getDepartmentId());
+
+    List<Doctor> findAll(Long departmentId) {
+        return repository.findByDepartmentIdAndIsDeletedFalse(departmentId);
+    }
+
+    List<Long> findDoctorIds(Long departmentId) {
+        return repository.findDoctorIds(departmentId);
+    }
+
+    Doctor addDoctor(Long departmentId, Long userId) {
+        Doctor doctor = repository.findByUser_IdAndDepartmentIdAndIsDeletedFalse(userId, departmentId);
         if (doctor != null) throw new BadRequestException("This user already a doctor in this department");
 
         doctor = new Doctor();
-        doctor.setUser(userService.findById(newData.getUserId()));
-        doctor.setLicenseImageUrl(newData.getLicenceUrl());
-        doctor.setDepartmentId(newData.getDepartmentId());
-        doctor.setStatus(newData.getStatus());
+        doctor.setUser(userService.findById(userId));
+        doctor.setDepartmentId(departmentId);
+        doctor.setStatus(Status.HIDDEN);
         return save(doctor);
     }
 
@@ -44,7 +54,7 @@ public class DoctorService extends BaseService<Doctor, DoctorRepository> {
     }
 
     public Doctor findMeInDepartment(Long departmentId) {
-        Doctor doctor = repository.findByUser_IdAndDepartmentIdAndIsDeletedFalse(1L, departmentId);
+        Doctor doctor = repository.findByUser_IdAndDepartmentIdAndIsDeletedFalse(getCurrentUser().getUser().getId(), departmentId);
         if (doctor == null) throw new BadRequestException("User is not doctor of this department");
         return doctor;
     }

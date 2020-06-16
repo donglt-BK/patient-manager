@@ -1,5 +1,6 @@
 package com.bk.donglt.patient_manager.config.sercurity;
 
+import com.bk.donglt.patient_manager.dto.user.UserDataDto;
 import com.bk.donglt.patient_manager.dto.user.UserDetailDto;
 import com.bk.donglt.patient_manager.enums.Role;
 import lombok.Getter;
@@ -21,5 +22,15 @@ public class CustomUserDetails extends org.springframework.security.core.userdet
     public boolean hasRole(Role role) {
         String authority = "ROLE_" + role.toString();
         return this.getAuthorities().stream().anyMatch(authorityInstance -> authorityInstance.getAuthority().equalsIgnoreCase(authority));
+    }
+
+    public void updateUser(UserDataDto userDto) {
+        user.setName(userDto.getName());
+        user.setDob(userDto.getDob());
+        user.setAvatar(userDto.getAvatar());
+        user.setGender(userDto.getGender());
+        user.setAddress(userDto.getAddress());
+        user.setPhone(userDto.getPhone());
+        user.setEmail(userDto.getEmail());
     }
 }

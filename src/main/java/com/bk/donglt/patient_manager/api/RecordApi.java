@@ -26,12 +26,12 @@ public class RecordApi extends BaseResource<RecordService> {
             @RequestParam(name = "size", required = false, defaultValue = "10") int size) {
         return ResponseEntity.ok().body(service.findPatientRecord(patientId, departmentId, getPageable(page, size)));
     }
-
+/*
     @PostMapping("/grantPermission")
     public ResponseEntity<Void> grantPermission(@RequestParam("doctorId") long doctorId) {
         service.grantPermission(doctorId);
         return ResponseEntity.ok().build();
-    }
+    }*/
 
     @PostMapping("/create")
     public ResponseEntity<Record> create(@RequestBody RecordDataDto dataDto) {

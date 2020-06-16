@@ -13,11 +13,10 @@ import com.bk.donglt.patient_manager.repository.UserRepository;
 import com.bk.donglt.patient_manager.service.address.AddressService;
 import com.bk.donglt.patient_manager.service.schedule.RecordService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.LinkedList;
-import java.util.List;
 
 @Service
 public class UserService extends BaseService<User, UserRepository> {
@@ -43,31 +42,31 @@ public class UserService extends BaseService<User, UserRepository> {
         return repository.findByUsernameAndIsDeletedFalse(username);
     }
 
-    public List<User> findUsers(List<Long> ids) {
-        if (ids.size() == 0) return new LinkedList<>();
-        return repository.findByIdIn(ids);
-    }
-
     public void register(UserDataDto userDto) {
-        if (userDto.getId() != null) throw new BadRequestException("id MUST be null to create new account");
         User existUser = repository.findByUsernameAndIsDeletedFalse(userDto.getUsername());
         if (existUser != null) throw new BadRequestException("username exist");
 
         userDto.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
         userDto.setFormattedAddress(addressService.build(userDto.getAddress()));
-        userDto.setFormattedWorkAddress(addressService.build(userDto.getWorkAddress()));
-
+        userDto.setAvatar("default-avatar-2.jpg");
         save(new User(userDto));
     }
 
     public void update(UserDataDto userDto) {
-        if (userDto.getId() == null) throw new BadRequestException("id required");
-        if (userDto.getPassword() != null) throw new BadRequestException("can NOT update password using thí API");
-
         userDto.setFormattedAddress(addressService.build(userDto.getAddress()));
-        userDto.setFormattedWorkAddress(addressService.build(userDto.getWorkAddress()));
 
-        save(new User(userDto));
+        User user = findById(getCurrentUser().getUser().getId());
+
+        user.setName(userDto.getName());
+        user.setDob(userDto.getDob());
+        user.setAvatar(userDto.getAvatar());
+        user.setGender(userDto.getGender());
+        user.setAddress(userDto.getFormattedAddress());
+        user.setPhone(userDto.getPhone());
+        user.setEmail(userDto.getEmail());
+
+        getCurrentUser().updateUser(userDto);
+        update(user);
     }
 
     public UserDetailDto getUserInfo() {
@@ -80,10 +79,17 @@ public class UserService extends BaseService<User, UserRepository> {
 
         userDetailDto.setManageHospitalIds(hospitalRepository.findManageHospitalIdsByUser(id));
         userDetailDto.setManageDepartmentIds(departmentRepository.findManageDepartmentIdsByUser(id));
+
+        userDetailDto.setManageDepartmentHospitalId(departmentRepository.findManageDepartmentHospitalIdsByUser(id));
         userDetailDto.setDoctorIds(doctorRepository.findDoctorIdsByUserId(id));
         userDetailDto.setSystemAdmin(user.getRole().equals(Role.SYSTEM_ADMIN));
 
-        userDetailDto.setDoctorRequest(recordService.getRequest(id));
+        //userDetailDto.setDoctorRequest(recordService.getRequest(id));
         return userDetailDto;
+    }
+
+    public Page<User> find(Pageable pageable, String key) {
+        if ("".equals(key)) return repository.findAll(pageable);
+        return repository.findByKey(key, pageable);
     }
 }

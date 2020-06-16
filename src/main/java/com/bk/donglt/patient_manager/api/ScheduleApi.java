@@ -41,12 +41,24 @@ public class ScheduleApi extends BaseResource<ScheduleService> {
             @RequestParam(name = "shift") Shift shift,
             @RequestParam(name = "scheduleLimit") int scheduleLimit,
             @RequestParam(name = "doctorLimit") int doctorLimit,
-            @RequestParam(name = "doctorIds") String doctorIds) {
+            @RequestParam(name = "doctorId") Long doctorId) {
 
         return ResponseEntity.ok().body(
                 service.assign(DateFormat.parseDate(date), shift,
-                        scheduleLimit, doctorLimit,
-                        doctorIds.split("\\|\\|"))
+                        scheduleLimit, doctorLimit, doctorId)
+        );
+    }
+    @PostMapping("/create")
+    public ResponseEntity<Schedule> create(
+            @RequestParam(name = "date") String date,
+            @RequestParam(name = "shift") Shift shift,
+            @RequestParam(name = "scheduleLimit") int scheduleLimit,
+            @RequestParam(name = "doctorLimit") int doctorLimit,
+            @RequestParam(name = "departmentId") Long departmentId) {
+
+        return ResponseEntity.ok().body(
+                service.create(DateFormat.parseDate(date), shift,
+                        scheduleLimit, doctorLimit, departmentId)
         );
     }
 

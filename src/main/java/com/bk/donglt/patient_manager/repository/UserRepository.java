@@ -13,15 +13,9 @@ import java.util.List;
 public interface UserRepository extends BaseRepository<User> {
     User findByUsernameAndIsDeletedFalse(String username);
 
-    List<User> findByIdIn(List<Long> ids);
-
     List<User> findByIdInAndRoleIn(List<Long> ids, List<String> roles);
 
-    @Query(value = "select u from User u where u.isDeleted = false and (u.name like %?1% or CONCAT(u.id, '') like %?1%) order by u.updatedTime desc, u.id")
+    @Query(value = "select u from User u where u.isDeleted = false and (u.name like %?1% or u.username like %?1% or CONCAT(u.id, '') like %?1%) order by u.updatedTime desc, u.id")
     Page<User> findByKey(String key, Pageable pageable);
-
-    @Query(value = "select u from User u where u.isDeleted = false and (u.name like %?1% or CONCAT(u.id, '') like %?1%) and u.role in (?2) order by u.updatedTime desc, u.id")
-    Page<User> findByKeyAndRoles(String name, List<String> roles, Pageable pageable);
-
 
 }

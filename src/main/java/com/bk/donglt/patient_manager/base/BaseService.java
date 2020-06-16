@@ -11,6 +11,8 @@ import com.bk.donglt.patient_manager.exception.UnAuthorizeException;
 import com.bk.donglt.patient_manager.service.manager.HospitalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -26,6 +28,8 @@ public abstract class BaseService<E extends BaseEntity, R extends BaseRepository
     private CurrentUserDetailsContainer currentUserDetailsContainer;
 
     public CustomUserDetails getCurrentUser() {
+        if (this.currentUserDetailsContainer.getUserDetails() == null)
+            throw new UnAuthorizeException();
         return this.currentUserDetailsContainer.getUserDetails();
     }
 
@@ -42,13 +46,21 @@ public abstract class BaseService<E extends BaseEntity, R extends BaseRepository
         return repository.saveAll(entities);
     }
 
+    public List<E> findAll() {
+        return repository.findByIsDeletedFalse();
+    }
+
     public E findById(Long id) {
         return repository.findById(id).orElseThrow(() -> new BadRequestException("Id not found"));
     }
 
-
     public List<E> findByIdIn(Collection<Long> ids) {
         return repository.findByIdIn(ids);
+    }
+
+
+    public Page<E> findByIdIn(Collection<Long> ids, Pageable pageable) {
+        return repository.findByIdIn(ids, pageable);
     }
 
     public E update(E entity) {

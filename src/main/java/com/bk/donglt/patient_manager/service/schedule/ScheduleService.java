@@ -13,10 +13,8 @@ import com.bk.donglt.patient_manager.service.manager.DoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ScheduleService extends BaseService<Schedule, ScheduleRepository> {
@@ -40,14 +38,10 @@ public class ScheduleService extends BaseService<Schedule, ScheduleRepository> {
         checkUserAuthorize(department);
         return repository.findByDateBetweenAndDepartmentIdAndIsDeletedFalse(start, end, departmentId);
     }
-
-    public Schedule assign(Date date, Shift shift, int scheduleLimit, int doctorLimit, String[] doctorIds) {
-        List<Doctor> doctors = doctorService.findByIdIn(Arrays.stream(doctorIds).map(Long::valueOf).collect(Collectors.toList()));
-        if (doctors.size() == 0) throw new BadRequestException("No doctor found");
-
-        Department department = departmentService.findById(doctors.get(0).getDepartmentId());
+    public Schedule create(Date date, Shift shift, int scheduleLimit, int doctorLimit, Long departmentId) {
+        Department department = departmentService.findById(departmentId);
         checkUserAuthorize(department);
-        Schedule schedule = repository.findByDateAndShiftAndDepartmentIdAndIsDeletedFalse(date, shift, department.getHospitalId());
+        Schedule schedule = repository.findByDateAndShiftAndDepartmentIdAndIsDeletedFalse(date, shift, department.getId());
         if (schedule == null) {
             schedule = new Schedule();
             schedule.setDate(date);
@@ -59,12 +53,28 @@ public class ScheduleService extends BaseService<Schedule, ScheduleRepository> {
         }
         schedule.setScheduleLimit(scheduleLimit);
         schedule.setDoctorLimit(doctorLimit);
-        doctorScheduleStatusService.create(schedule.getId(), doctors);
-        for (Doctor doctor : doctors) {
-            if (!doctor.getDepartmentId().equals(department.getId()))
-                throw new BadRequestException("Doctors not in same department");
-            schedule.addDoctor(doctor);
+        return update(schedule);
+    }
+
+    public Schedule assign(Date date, Shift shift, int scheduleLimit, int doctorLimit, Long doctorId) {
+        Doctor doctor = doctorService.findById(doctorId);
+        Department department = departmentService.findById(doctor.getDepartmentId());
+        checkUserAuthorize(department);
+        Schedule schedule = repository.findByDateAndShiftAndDepartmentIdAndIsDeletedFalse(date, shift, department.getId());
+        if (schedule == null) {
+            schedule = new Schedule();
+            schedule.setDate(date);
+            schedule.setShift(shift);
+            schedule.setDepartmentId(department.getId());
+            schedule = save(schedule);
+
+            scheduleStatusService.create(schedule.getId());
         }
+        schedule.setScheduleLimit(scheduleLimit);
+        schedule.setDoctorLimit(doctorLimit);
+        schedule.addDoctor(doctor);
+        doctorScheduleStatusService.create(schedule.getId(), doctor);
+
         return update(schedule);
     }
 
@@ -91,7 +101,7 @@ public class ScheduleService extends BaseService<Schedule, ScheduleRepository> {
         Department department = departmentService.findById(doctor.getDepartmentId());
         checkUserAuthorize(department);
 
-        Schedule schedule = repository.findByDateAndShiftAndDepartmentIdAndIsDeletedFalse(date, shift, department.getHospitalId());
+        Schedule schedule = repository.findByDateAndShiftAndDepartmentIdAndIsDeletedFalse(date, shift, department.getId());
         if (schedule == null) {
             throw new BadRequestException("Schedule not exist");
         } else {

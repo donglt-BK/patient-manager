@@ -5,6 +5,7 @@ import com.bk.donglt.patient_manager.dto.user.UserDataDto;
 import com.bk.donglt.patient_manager.entity.address.Address;
 import com.bk.donglt.patient_manager.enums.Gender;
 import com.bk.donglt.patient_manager.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,10 +24,12 @@ public class User extends BaseEntity {
     private Role role;
 
     private String username;
+    @JsonIgnore
     private String password;
 
     private String name;
     private Date dob;
+    private String avatar;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -37,13 +40,6 @@ public class User extends BaseEntity {
     })
     private Address address;
 
-    @Embedded
-    @AssociationOverrides({
-            @AssociationOverride(name = "block", joinColumns = @JoinColumn(name = "work_block_id")),
-    })
-    @AttributeOverride(name = "specificAddress", column = @Column(name = "work_specific_address"))
-    private Address workAddress;
-
     private String phone;
     private String email;
 
@@ -53,11 +49,11 @@ public class User extends BaseEntity {
         password = userDto.getPassword();
 
         name = userDto.getName();
+        avatar = userDto.getAvatar();
         dob = userDto.getDob();
         gender = userDto.getGender();
 
         address = userDto.getFormattedAddress();
-        workAddress = userDto.getFormattedWorkAddress();
 
         phone = userDto.getPhone();
         email = userDto.getEmail();

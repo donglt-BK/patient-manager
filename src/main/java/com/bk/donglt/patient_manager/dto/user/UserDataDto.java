@@ -11,19 +11,17 @@ import java.util.Date;
 @Getter
 @Setter
 public class UserDataDto {
-    private Long id;
-
     private String username;
     private String password;
+
     private String name;
+    private String avatar;
     private Date dob;
     private Gender gender;
 
     private AddressDto address;
-    private AddressDto workAddress;
 
     private Address formattedAddress;
-    private Address formattedWorkAddress;
 
     private String phone;
     private String email;

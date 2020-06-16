@@ -16,6 +16,7 @@ public class DoctorDto {
     private String licenceUrl;
     private long departmentId;
     private String departmentName;
+    private String avatar;
     private Status status;
 
     public DoctorDto(Department department, Doctor doctor) {
@@ -25,5 +26,6 @@ public class DoctorDto {
         departmentId = department.getId();
         departmentName = department.getName();
         status = doctor.getStatus();
+        avatar = doctor.getUser().getAvatar();
     }
 }

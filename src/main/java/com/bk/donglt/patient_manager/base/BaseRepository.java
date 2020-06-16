@@ -11,7 +11,9 @@ import java.util.List;
 @NoRepositoryBean
 public interface BaseRepository<E extends BaseEntity> extends JpaRepository<E, Long> {
     Page<E> findByIsDeletedFalse(Pageable pageable);
+    List<E> findByIsDeletedFalse();
 
     List<E> findByIdIn(Collection<Long> ids);
+    Page<E> findByIdIn(Collection<Long> ids, Pageable pageable);
 
 }

@@ -2,7 +2,6 @@ package com.bk.donglt.patient_manager.entity.hospital;
 
 import com.bk.donglt.patient_manager.base.BaseEntity;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDataDto;
-import com.bk.donglt.patient_manager.dto.manage.ManagerChangeDto;
 import com.bk.donglt.patient_manager.entity.User;
 import com.bk.donglt.patient_manager.entity.address.Address;
 import com.bk.donglt.patient_manager.entity.address.Location;
@@ -11,7 +10,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -66,11 +64,11 @@ public class Hospital extends BaseEntity {
         if (update.getAddress() != null) address = update.getAddress();
     }
 
-    public void update(ManagerChangeDto update) {
-        if (update.getAddedManagers() != null) managers.addAll(update.getAddedManagers());
+    public void addManager(User user) {
+        managers.add(user);
+    }
 
-        List<Long> removeManagerIds = update.getRemovedManagerIds();
-        if (removeManagerIds != null && removeManagerIds.size() != 0)
-            managers.removeIf(manager -> removeManagerIds.contains(manager.getId()));
+    public void removeManager(Long userId) {
+        managers.removeIf(u -> u.getId().equals(userId));
     }
 }

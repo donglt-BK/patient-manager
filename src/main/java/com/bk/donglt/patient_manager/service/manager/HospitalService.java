@@ -2,7 +2,7 @@ package com.bk.donglt.patient_manager.service.manager;
 
 import com.bk.donglt.patient_manager.base.BaseService;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDataDto;
-import com.bk.donglt.patient_manager.dto.manage.ManagerChangeDto;
+import com.bk.donglt.patient_manager.entity.User;
 import com.bk.donglt.patient_manager.entity.hospital.Hospital;
 import com.bk.donglt.patient_manager.enums.Status;
 import com.bk.donglt.patient_manager.repository.HospitalRepository;
@@ -33,10 +33,6 @@ public class HospitalService extends BaseService<Hospital, HospitalRepository> {
         if (data.getAddressId() != null)
             data.setAddress(addressService.build(data.getAddressId()));
     }
-    private void processData(ManagerChangeDto data) {
-        if (data.getAddedManagerIds() != null)
-            data.setAddedManagers(userService.findUsers(data.getAddedManagerIds()));
-    }
 
     Hospital addHospital(HospitalDataDto newData) {
         processData(newData);
@@ -51,10 +47,12 @@ public class HospitalService extends BaseService<Hospital, HospitalRepository> {
         return update(hospital);
     }
 
-    Hospital updateManager(ManagerChangeDto updateData) {
-        Hospital hospital = findById(updateData.getHospitalId());
-        processData(updateData);
-        hospital.update(updateData);
-        return update(hospital);
+    User updateManager(Long hospitalId, Long managerId, boolean isAdd) {
+        Hospital hospital = findById(hospitalId);
+        User user = userService.findById(managerId);
+        if (isAdd) hospital.addManager(user);
+        else hospital.removeManager(user.getId());
+        update(hospital);
+        return user;
     }
 }
