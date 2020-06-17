@@ -22,6 +22,8 @@ public class DepartmentDto {
     private Status status;
     private List<User> managers;
 
+    private String files;
+
     public DepartmentDto(Hospital hospital, Department department) {
         id = department.getId();
         name = department.getName();

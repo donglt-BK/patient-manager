@@ -6,10 +6,14 @@ import com.bk.donglt.patient_manager.dto.doctor.DoctorDto;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDto;
 import com.bk.donglt.patient_manager.entity.Appointment;
 import com.bk.donglt.patient_manager.entity.Doctor;
-import com.bk.donglt.patient_manager.entity.hospital.*;
+import com.bk.donglt.patient_manager.entity.hospital.Department;
+import com.bk.donglt.patient_manager.entity.hospital.Hospital;
+import com.bk.donglt.patient_manager.entity.hospital.Schedule;
+import com.bk.donglt.patient_manager.entity.hospital.ScheduleStatus;
 import com.bk.donglt.patient_manager.exception.BadRequestException;
 import com.bk.donglt.patient_manager.exception.UnAuthorizeException;
 import com.bk.donglt.patient_manager.repository.AppointmentRepository;
+import com.bk.donglt.patient_manager.service.FileUploadService;
 import com.bk.donglt.patient_manager.service.UserService;
 import com.bk.donglt.patient_manager.service.manager.DepartmentService;
 import com.bk.donglt.patient_manager.service.manager.DoctorService;
@@ -20,6 +24,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AppointmentService extends BaseService<Appointment, AppointmentRepository> {
@@ -44,14 +50,24 @@ public class AppointmentService extends BaseService<Appointment, AppointmentRepo
     @Autowired
     private DoctorScheduleStatusService doctorScheduleStatusService;
 
+    @Autowired
+    private FileUploadService fileUploadService;
+
     //-----------------------------------------------find-------------------------------------------------------
     public Page<HospitalDto> findHospital(String name, Pageable pageable) {
-        return hospitalService.findSearchable(name, pageable).map(HospitalDto::new);
+        Page<HospitalDto> dtos = hospitalService.findSearchable(name, pageable)
+                .map(HospitalDto::new);
+        dtos.forEach(dto -> dto.setFiles(fileUploadService.getHospitalFiles(dto.getId())));
+        return dtos;
     }
 
-    public Page<DepartmentDto> findDepartment(Long hospitalId, String name, Pageable pageable) {
+    public List<DepartmentDto> findDepartment(Long hospitalId) {
         Hospital hospital = hospitalService.findById(hospitalId);
-        return departmentService.findSearchable(hospitalId, name, pageable).map(department -> new DepartmentDto(hospital, department));
+        List<DepartmentDto> dtos = departmentService.findSearchable(hospitalId).stream()
+                .map(department -> new DepartmentDto(hospital, department))
+                .collect(Collectors.toList());
+        dtos.forEach(dto -> dto.setFiles(fileUploadService.getDepartmentFiles(dto.getId())));
+        return dtos;
     }
 
     public Page<DoctorDto> findDoctor(Long departmentId, String name, Pageable pageable) {
@@ -81,12 +97,12 @@ public class AppointmentService extends BaseService<Appointment, AppointmentRepo
 
         Schedule schedule = scheduleService.findById(scheduleId);
         ScheduleStatus scheduleStatus = scheduleStatusService.findByScheduleId(scheduleId);
-        if (schedule.getScheduleLimit() == scheduleStatus.getCurrentBook())
+        if (schedule.getLimit() == scheduleStatus.getCurrentBook())
             throw new BadRequestException("Schedule is full");
         scheduleStatusService.increase(scheduleStatus);
         appointment.setSchedule(schedule);
 
-        if (doctorId != null) {
+        /*if (doctorId != null) {
             if (!schedule.contain(doctorId))
                 throw new BadRequestException("Doctor not working in this schedule");
 
@@ -95,7 +111,7 @@ public class AppointmentService extends BaseService<Appointment, AppointmentRepo
                 throw new BadRequestException("Doctor schedule is full");
             doctorScheduleStatusService.increase(doctorScheduleStatus);
             appointment.setDoctor(doctorService.findById(doctorId));
-        }
+        }*/
         return save(appointment);
     }
 

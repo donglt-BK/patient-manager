@@ -15,7 +15,7 @@ public interface DepartmentRepository extends BaseRepository<Department> {
     Page<Department> findByHospitalIdAndIsDeletedFalse(Long id, Pageable pageable);
     List<Department> findByHospitalIdAndIsDeletedFalse(Long id);
 
-    Page<Department> findByHospitalIdAndNameContainingAndStatusNotAndIsDeletedFalse(Long id, String name, Status status, Pageable pageable);
+    List<Department> findByHospitalIdAndStatusNotAndIsDeletedFalseOrderByStatus(Long id, Status status);
 
     @Query(value = "select department_id from department_manager where manager_id = ?1", nativeQuery = true)
     List<Long> findManageDepartmentIdsByUser(Long userId);

@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/appointment")
 public class AppointmentApi extends BaseResource<AppointmentService> {
@@ -22,12 +24,9 @@ public class AppointmentApi extends BaseResource<AppointmentService> {
     }
 
     @GetMapping("/find/department")
-    public ResponseEntity<Page<DepartmentDto>> findDepartment(
-            @RequestParam(name = "hospitalId") Long hospitalId,
-            @RequestParam(name = "name", required = false, defaultValue = "") String name,
-            @RequestParam(name = "page", required = false, defaultValue = "1") int page,
-            @RequestParam(name = "size", required = false, defaultValue = "10") int size) {
-        return ResponseEntity.ok().body(service.findDepartment(hospitalId, name, getPageable(page, size)));
+    public ResponseEntity<List<DepartmentDto>> findDepartment(
+            @RequestParam(name = "hospitalId") Long hospitalId) {
+        return ResponseEntity.ok().body(service.findDepartment(hospitalId));
     }
 
     @GetMapping("/find/doctor")

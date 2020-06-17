@@ -49,7 +49,6 @@
         </addColumn>
     </changeSet>
 
-
     <changeSet id="add_new_column_for_schedule" author="donglt">
         <addColumn tableName="schedule">
             <column name="schedule_limit" type="int(11)"/>
@@ -88,5 +87,12 @@
             <column name="doctor_id" type="int(11)"/>
             <column name="current_book" type="int(11)" defaultValue="0"/>
         </createTable>
+    </changeSet>
+
+
+    <changeSet id="add_column_close" author="donglt">
+        <addColumn tableName="schedule">
+            <column name="close" type="boolean" defaultValue="false"/>
+        </addColumn>
     </changeSet>
 </databaseChangeLog>

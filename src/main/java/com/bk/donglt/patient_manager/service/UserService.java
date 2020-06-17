@@ -89,7 +89,7 @@ public class UserService extends BaseService<User, UserRepository> {
     }
 
     public Page<User> find(Pageable pageable, String key) {
-        if ("".equals(key)) return repository.findAll(pageable);
+        if ("".equals(key)) return repository.findWithoutKey(pageable);
         return repository.findByKey(key, pageable);
     }
 }

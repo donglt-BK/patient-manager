@@ -5,6 +5,10 @@ import com.bk.donglt.patient_manager.entity.hospital.ScheduleStatus;
 import com.bk.donglt.patient_manager.repository.ScheduleStatusRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Service
 public class ScheduleStatusService extends BaseService<ScheduleStatus, ScheduleStatusRepository> {
     public ScheduleStatus findByScheduleId(Long scheduleId) {
@@ -23,10 +27,13 @@ public class ScheduleStatusService extends BaseService<ScheduleStatus, ScheduleS
         update(scheduleStatus);
     }
 
-
     public void decrease(ScheduleStatus scheduleStatus) {
         scheduleStatus.decrease();
         update(scheduleStatus);
     }
 
+    public Map<Long, Integer> getStatus(List<Long> scheduleIds) {
+        List<ScheduleStatus> scheduleStatus = repository.findByScheduleIdIn(scheduleIds);
+        return scheduleStatus.stream().collect(Collectors.toMap(ScheduleStatus::getScheduleId, ScheduleStatus::getCurrentBook));
+    }
 }

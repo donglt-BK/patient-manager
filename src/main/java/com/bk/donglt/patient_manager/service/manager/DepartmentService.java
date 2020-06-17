@@ -19,8 +19,8 @@ public class DepartmentService extends BaseService<Department, DepartmentReposit
     @Autowired
     private UserService userService;
 
-    public Page<Department> findSearchable(Long hospitalId, String name, Pageable pageRequest) {
-        return repository.findByHospitalIdAndNameContainingAndStatusNotAndIsDeletedFalse(hospitalId, name, Status.HIDDEN, pageRequest);
+    public List<Department> findSearchable(Long hospitalId) {
+        return repository.findByHospitalIdAndStatusNotAndIsDeletedFalseOrderByStatus(hospitalId, Status.HIDDEN);
     }
 
     Page<Department> findAll(Long hospitalId, Pageable pageRequest) {

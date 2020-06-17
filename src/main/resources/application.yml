@@ -30,3 +30,7 @@ app:
   file-upload:
     folder: C:\Users\AD\Desktop\patient-manager-file\
 
+logging:
+  level:
+    org.hibernate.type: trace
+

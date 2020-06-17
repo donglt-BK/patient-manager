@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface HospitalRepository extends BaseRepository<Hospital> {
-    Page<Hospital> findByNameContainingAndStatusNotAndIsDeletedFalse(String name, Status status, Pageable pageable);
+    Page<Hospital> findByNameContainsAndStatusNotAndIsDeletedFalseOrderByStatus(String name, Status status, Pageable pageable);
 
     @Query(value = "select hospital_id from hospital_manager where manager_id = ?1", nativeQuery = true)
     List<Long> findManageHospitalIdsByUser(Long userId);

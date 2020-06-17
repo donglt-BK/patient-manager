@@ -39,26 +39,38 @@ public class ScheduleApi extends BaseResource<ScheduleService> {
     public ResponseEntity<Schedule> assign(
             @RequestParam(name = "date") String date,
             @RequestParam(name = "shift") Shift shift,
-            @RequestParam(name = "scheduleLimit") int scheduleLimit,
-            @RequestParam(name = "doctorLimit") int doctorLimit,
+            @RequestParam(name = "limit") int limit,
+            @RequestParam(name = "isClosed") boolean isClosed,
             @RequestParam(name = "doctorId") Long doctorId) {
 
         return ResponseEntity.ok().body(
                 service.assign(DateFormat.parseDate(date), shift,
-                        scheduleLimit, doctorLimit, doctorId)
+                        limit, isClosed, doctorId)
         );
     }
+
+    @PostMapping("/toggle")
+    public ResponseEntity<Void> toggle(
+            @RequestParam(name = "date") String date,
+            @RequestParam(name = "shift") Shift shift,
+            @RequestParam(name = "isClosed") boolean isClosed,
+            @RequestParam(name = "departmentId") Long departmentId) {
+        service.toggle(DateFormat.parseDate(date), shift, isClosed, departmentId);
+        return ResponseEntity.ok().build();
+    }
+
+
     @PostMapping("/create")
     public ResponseEntity<Schedule> create(
             @RequestParam(name = "date") String date,
             @RequestParam(name = "shift") Shift shift,
-            @RequestParam(name = "scheduleLimit") int scheduleLimit,
-            @RequestParam(name = "doctorLimit") int doctorLimit,
+            @RequestParam(name = "limit") int limit,
+            @RequestParam(name = "isClosed") boolean isClosed,
             @RequestParam(name = "departmentId") Long departmentId) {
 
         return ResponseEntity.ok().body(
                 service.create(DateFormat.parseDate(date), shift,
-                        scheduleLimit, doctorLimit, departmentId)
+                        limit, isClosed, departmentId)
         );
     }
 

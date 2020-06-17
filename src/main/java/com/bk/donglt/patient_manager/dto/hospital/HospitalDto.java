@@ -23,6 +23,9 @@ public class HospitalDto {
     private List<User> managers;
     private AddressDto address;
 
+    private String files;
+
+
     public HospitalDto(Hospital hospital) {
         id = hospital.getId();
         name = hospital.getName();

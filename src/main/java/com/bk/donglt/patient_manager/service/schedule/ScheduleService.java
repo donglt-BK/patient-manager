@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ScheduleService extends BaseService<Schedule, ScheduleRepository> {
@@ -30,15 +32,35 @@ public class ScheduleService extends BaseService<Schedule, ScheduleRepository> {
     @Autowired
     private ScheduleStatusService scheduleStatusService;
 
-    @Autowired
-    private DoctorScheduleStatusService doctorScheduleStatusService;
-
     public List<Schedule> findSchedules(Long departmentId, Date start, Date end) {
         Department department = departmentService.findById(departmentId);
         checkUserAuthorize(department);
-        return repository.findByDateBetweenAndDepartmentIdAndIsDeletedFalse(start, end, departmentId);
+        List<Schedule> schedules = repository.findByDateBetweenAndDepartmentIdAndIsDeletedFalse(start, end, departmentId);
+        Map<Long, Integer> status = scheduleStatusService.getStatus(schedules.stream().map(Schedule::getId).collect(Collectors.toList()));
+        schedules.forEach(schedule -> schedule.setBookingStatus(status.getOrDefault(schedule.getId(), 0)));
+        return schedules;
     }
-    public Schedule create(Date date, Shift shift, int scheduleLimit, int doctorLimit, Long departmentId) {
+
+    public void toggle(Date date, Shift shift, boolean isClosed, Long departmentId) {
+        Department department = departmentService.findById(departmentId);
+        checkUserAuthorize(department);
+        Schedule schedule = repository.findByDateAndShiftAndDepartmentIdAndIsDeletedFalse(date, shift, department.getId());
+        if (schedule == null) {
+            schedule = new Schedule();
+            schedule.setDate(date);
+            schedule.setShift(shift);
+            schedule.setDepartmentId(department.getId());
+            schedule.setClosed(isClosed);
+            schedule = save(schedule);
+
+            scheduleStatusService.create(schedule.getId());
+        } else {
+            schedule.setClosed(isClosed);
+            update(schedule);
+        }
+    }
+
+    public Schedule create(Date date, Shift shift, int limit, boolean isClosed, Long departmentId) {
         Department department = departmentService.findById(departmentId);
         checkUserAuthorize(department);
         Schedule schedule = repository.findByDateAndShiftAndDepartmentIdAndIsDeletedFalse(date, shift, department.getId());
@@ -51,12 +73,12 @@ public class ScheduleService extends BaseService<Schedule, ScheduleRepository> {
 
             scheduleStatusService.create(schedule.getId());
         }
-        schedule.setScheduleLimit(scheduleLimit);
-        schedule.setDoctorLimit(doctorLimit);
+        schedule.setLimit(limit);
+        schedule.setClosed(isClosed);
         return update(schedule);
     }
 
-    public Schedule assign(Date date, Shift shift, int scheduleLimit, int doctorLimit, Long doctorId) {
+    public Schedule assign(Date date, Shift shift, int limit, boolean isClosed, Long doctorId) {
         Doctor doctor = doctorService.findById(doctorId);
         Department department = departmentService.findById(doctor.getDepartmentId());
         checkUserAuthorize(department);
@@ -70,10 +92,9 @@ public class ScheduleService extends BaseService<Schedule, ScheduleRepository> {
 
             scheduleStatusService.create(schedule.getId());
         }
-        schedule.setScheduleLimit(scheduleLimit);
-        schedule.setDoctorLimit(doctorLimit);
+        schedule.setLimit(limit);
+        schedule.setClosed(isClosed);
         schedule.addDoctor(doctor);
-        doctorScheduleStatusService.create(schedule.getId(), doctor);
 
         return update(schedule);
     }
@@ -85,13 +106,12 @@ public class ScheduleService extends BaseService<Schedule, ScheduleRepository> {
             schedule.setDate(date);
             schedule.setShift(shift);
             schedule.setDepartmentId(department.getId());
-            schedule.setDoctorLimit(30);
-            schedule.setScheduleLimit(50);
+            schedule.setLimit(100);
+            schedule.setClosed(false);
             save(schedule);
 
             scheduleStatusService.create(schedule.getId());
         }
-        doctorScheduleStatusService.create(schedule.getId(), doctor);
         schedule.addDoctor(doctor);
         update(schedule);
     }

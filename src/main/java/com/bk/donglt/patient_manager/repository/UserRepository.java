@@ -15,7 +15,9 @@ public interface UserRepository extends BaseRepository<User> {
 
     List<User> findByIdInAndRoleIn(List<Long> ids, List<String> roles);
 
-    @Query(value = "select u from User u where u.isDeleted = false and (u.name like %?1% or u.username like %?1% or CONCAT(u.id, '') like %?1%) order by u.updatedTime desc, u.id")
+    @Query(value = "select u from User u where u.isDeleted = false and u.role <> 'SYSTEM_ADMIN' and (u.name like %?1% or u.username like %?1% or CONCAT(u.id, '') like %?1%) order by u.updatedTime desc, u.id")
     Page<User> findByKey(String key, Pageable pageable);
 
+    @Query(value = "select u from User u where u.isDeleted = false and u.role <> 'SYSTEM_ADMIN' order by u.updatedTime desc, u.id")
+    Page<User> findWithoutKey(Pageable pageable);
 }

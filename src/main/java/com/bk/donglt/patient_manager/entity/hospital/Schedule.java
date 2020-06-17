@@ -31,11 +31,14 @@ public class Schedule extends BaseEntity {
     )
     private Set<Doctor> doctors;
 
-    @Column(name = "schedule_limit")
-    private int scheduleLimit;
+    @Column(name = "`limit`")
+    private int limit;
 
-    @Column(name = "doctor_limit")
-    private int doctorLimit;
+    @Column(name = "close")
+    private boolean isClosed;
+
+    @Transient
+    private int bookingStatus;
 
     public void addDoctor(Doctor doctor) {
         if (doctors == null) doctors = new HashSet<>();

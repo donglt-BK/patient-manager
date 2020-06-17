@@ -22,7 +22,7 @@ public class HospitalService extends BaseService<Hospital, HospitalRepository> {
     private UserService userService;
 
     public Page<Hospital> findSearchable(String name, Pageable pageRequest) {
-        return repository.findByNameContainingAndStatusNotAndIsDeletedFalse(name, Status.HIDDEN, pageRequest);
+        return repository.findByNameContainsAndStatusNotAndIsDeletedFalseOrderByStatus(name, Status.HIDDEN, pageRequest);
     }
 
     Page<Hospital> findAll(Pageable pageRequest) {
