@@ -37,4 +37,11 @@
             <column name="description" type="varchar(2000)"/>
         </addColumn>
     </changeSet>
+
+
+    <changeSet id="add_department_image" author="donglt">
+        <addColumn tableName="department">
+            <column name="image" type="varchar(2000)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -6,11 +6,9 @@
     <include file="db/changelog/user/schema.xml"/>
     <include file="db/changelog/hospital/schema.xml"/>
     <include file="db/changelog/department/schema.xml"/>
-    <include file="db/changelog/doctor/schema.xml"/>
     <include file="db/changelog/schedule/schema.xml"/>
     <include file="db/changelog/appointment/schema.xml"/>
     <include file="db/changelog/address/schema.xml"/>
-    <include file="db/changelog/treatment/schema.xml"/>
     <include file="db/changelog/file/schema.xml"/>
 
 </databaseChangeLog>

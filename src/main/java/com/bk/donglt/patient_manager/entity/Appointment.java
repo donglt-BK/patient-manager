@@ -27,4 +27,10 @@ public class Appointment extends BaseEntity {
 
     @Column(name = "cancel")
     private boolean isCanceled;
+
+    @Transient
+    private String hospitalName;
+
+    @Transient
+    private String departmentName;
 }

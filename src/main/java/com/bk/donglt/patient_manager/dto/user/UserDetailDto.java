@@ -31,7 +31,6 @@ public class UserDetailDto {
     private List<Long> manageHospitalIds;
     private List<Long> manageDepartmentIds;
     private List<Long> manageDepartmentHospitalId;
-    private List<Long> doctorIds;
 
     private boolean isSystemAdmin;
 

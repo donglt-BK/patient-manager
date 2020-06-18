@@ -32,8 +32,8 @@ public class ScheduleStatusService extends BaseService<ScheduleStatus, ScheduleS
         update(scheduleStatus);
     }
 
-    public Map<Long, Integer> getStatus(List<Long> scheduleIds) {
+    public Map<Long, ScheduleStatus> getStatus(List<Long> scheduleIds) {
         List<ScheduleStatus> scheduleStatus = repository.findByScheduleIdIn(scheduleIds);
-        return scheduleStatus.stream().collect(Collectors.toMap(ScheduleStatus::getScheduleId, ScheduleStatus::getCurrentBook));
+        return scheduleStatus.stream().collect(Collectors.toMap(ScheduleStatus::getScheduleId, e -> e));
     }
 }

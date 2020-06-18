@@ -7,11 +7,9 @@ import com.bk.donglt.patient_manager.entity.User;
 import com.bk.donglt.patient_manager.enums.Role;
 import com.bk.donglt.patient_manager.exception.BadRequestException;
 import com.bk.donglt.patient_manager.repository.DepartmentRepository;
-import com.bk.donglt.patient_manager.repository.DoctorRepository;
 import com.bk.donglt.patient_manager.repository.HospitalRepository;
 import com.bk.donglt.patient_manager.repository.UserRepository;
 import com.bk.donglt.patient_manager.service.address.AddressService;
-import com.bk.donglt.patient_manager.service.schedule.RecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,12 +29,6 @@ public class UserService extends BaseService<User, UserRepository> {
 
     @Autowired
     private DepartmentRepository departmentRepository;
-
-    @Autowired
-    private DoctorRepository doctorRepository;
-
-    @Autowired
-    private RecordService recordService;
 
     public User findUser(String username) {
         return repository.findByUsernameAndIsDeletedFalse(username);
@@ -81,10 +73,8 @@ public class UserService extends BaseService<User, UserRepository> {
         userDetailDto.setManageDepartmentIds(departmentRepository.findManageDepartmentIdsByUser(id));
 
         userDetailDto.setManageDepartmentHospitalId(departmentRepository.findManageDepartmentHospitalIdsByUser(id));
-        userDetailDto.setDoctorIds(doctorRepository.findDoctorIdsByUserId(id));
         userDetailDto.setSystemAdmin(user.getRole().equals(Role.SYSTEM_ADMIN));
 
-        //userDetailDto.setDoctorRequest(recordService.getRequest(id));
         return userDetailDto;
     }
 

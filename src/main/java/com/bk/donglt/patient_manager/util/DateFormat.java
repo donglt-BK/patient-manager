@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class DateFormat {
-    public static final String DATE_FORMAT = "yyyy-MM-dd", DATE_TIME_FORMAT = "hh:mm";
+    public static final String DATE_FORMAT = "yyyy-MM-dd";
     private static final Logger LOGGER = LoggerFactory.getLogger(DateFormat.class);
 
     public static Date parse(String text, String format) {
@@ -23,10 +23,5 @@ public class DateFormat {
 
     public static Date parseDate(String text) {
         return parse(text, DATE_FORMAT);
-    }
-
-    public static String format(Date date, String format) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(format);
-        return dateFormat.format(date);
     }
 }

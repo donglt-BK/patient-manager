@@ -16,13 +16,13 @@ import java.util.List;
 public class DepartmentDto {
     private Long id;
     private String name;
+    private String image;
     private String description;
+    private Status status;
+
     private Long hospitalId;
     private String hospitalName;
-    private Status status;
     private List<User> managers;
-
-    private String files;
 
     public DepartmentDto(Hospital hospital, Department department) {
         id = department.getId();

@@ -2,10 +2,8 @@ package com.bk.donglt.patient_manager.service.schedule;
 
 import com.bk.donglt.patient_manager.base.BaseService;
 import com.bk.donglt.patient_manager.dto.department.DepartmentDto;
-import com.bk.donglt.patient_manager.dto.doctor.DoctorDto;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDto;
 import com.bk.donglt.patient_manager.entity.Appointment;
-import com.bk.donglt.patient_manager.entity.Doctor;
 import com.bk.donglt.patient_manager.entity.hospital.Department;
 import com.bk.donglt.patient_manager.entity.hospital.Hospital;
 import com.bk.donglt.patient_manager.entity.hospital.Schedule;
@@ -16,7 +14,6 @@ import com.bk.donglt.patient_manager.repository.AppointmentRepository;
 import com.bk.donglt.patient_manager.service.FileUploadService;
 import com.bk.donglt.patient_manager.service.UserService;
 import com.bk.donglt.patient_manager.service.manager.DepartmentService;
-import com.bk.donglt.patient_manager.service.manager.DoctorService;
 import com.bk.donglt.patient_manager.service.manager.HospitalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,6 +23,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,13 +41,7 @@ public class AppointmentService extends BaseService<Appointment, AppointmentRepo
     private DepartmentService departmentService;
 
     @Autowired
-    private DoctorService doctorService;
-
-    @Autowired
     private ScheduleStatusService scheduleStatusService;
-
-    @Autowired
-    private DoctorScheduleStatusService doctorScheduleStatusService;
 
     @Autowired
     private FileUploadService fileUploadService;
@@ -64,32 +56,36 @@ public class AppointmentService extends BaseService<Appointment, AppointmentRepo
 
     public List<DepartmentDto> findDepartment(Long hospitalId) {
         Hospital hospital = hospitalService.findById(hospitalId);
-        List<DepartmentDto> dtos = departmentService.findSearchable(hospitalId).stream()
+        return departmentService.findSearchable(hospitalId).stream()
                 .map(department -> new DepartmentDto(hospital, department))
                 .collect(Collectors.toList());
-        dtos.forEach(dto -> dto.setFiles(fileUploadService.getDepartmentFiles(dto.getId())));
-        return dtos;
-    }
-
-    public Page<DoctorDto> findDoctor(Long departmentId, String name, Pageable pageable) {
-        Department department = departmentService.findById(departmentId);
-        return doctorService.findSearchable(departmentId, name, pageable).map(doctor -> new DoctorDto(department, doctor));
     }
 
     //-----------------------------------------------book-------------------------------------------------------
-    public Page<Appointment> listMyAppointment(Pageable pageable) {
+    public List<Appointment> listMyAppointment() {
         long userId = getCurrentUser().getUser().getId();
-        return repository.findByUser_IdAndIsDeletedFalse(userId, pageable);
-    }
+        List<Appointment> appointments = repository.findByUser_IdAndIsDeletedFalse(userId);
+        List<Department> departments = departmentService.findByIdIn(
+                appointments.stream()
+                        .map(a -> a.getSchedule().getDepartmentId())
+                        .collect(Collectors.toList())
+        );
+        Map<Long, String> hospitalName = hospitalService.findByIdIn(
+                departments.stream()
+                        .map(Department::getHospitalId)
+                        .distinct().collect(Collectors.toList())
+        ).stream().collect(Collectors.toMap(Hospital::getId, Hospital::getName));
 
-    public Page<Appointment> listDoctorAppointment(Long departmentId, Pageable pageable) {
-        Doctor doctor = doctorService.findMeInDepartment(departmentId);
-        return repository.findByDoctor_IdAndIsDeletedFalse(doctor.getId(), pageable);
-    }
-
-    public Page<Appointment> listDepartmentAppointment(Long departmentId, Pageable pageable) {
-        checkUserAuthorize(departmentService.findById(departmentId));
-        return repository.findBySchedule_DepartmentIdAndIsDeletedFalse(departmentId, pageable);
+        Map<Long, String> names = departments.stream().collect(Collectors.toMap(
+                Department::getId,
+                d -> d.getName() + "||" + hospitalName.get(d.getHospitalId())
+        ));
+        for (Appointment appointment : appointments) {
+            String name = names.get(appointment.getSchedule().getDepartmentId());
+            appointment.setDepartmentName(name.split("\\|\\|")[0]);
+            appointment.setHospitalName(name.split("\\|\\|")[1]);
+        }
+        return appointments;
     }
 
     @Transactional

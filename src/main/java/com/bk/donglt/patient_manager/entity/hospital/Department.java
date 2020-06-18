@@ -18,6 +18,7 @@ public class Department extends BaseEntity {
     private String name;
     private String description;
 
+    private String image;
     private Long hospitalId;
 
     @Enumerated(EnumType.STRING)
@@ -51,6 +52,9 @@ public class Department extends BaseEntity {
 
         if (update.getHospitalId() != null)
             hospitalId = update.getHospitalId();
+
+        if (update.getImage() != null)
+            image = update.getImage();
     }
 
     public void addManager(User user) {

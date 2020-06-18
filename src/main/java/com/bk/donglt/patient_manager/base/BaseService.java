@@ -2,7 +2,6 @@ package com.bk.donglt.patient_manager.base;
 
 import com.bk.donglt.patient_manager.config.sercurity.CurrentUserDetailsContainer;
 import com.bk.donglt.patient_manager.config.sercurity.CustomUserDetails;
-import com.bk.donglt.patient_manager.entity.Doctor;
 import com.bk.donglt.patient_manager.entity.hospital.Department;
 import com.bk.donglt.patient_manager.entity.hospital.Hospital;
 import com.bk.donglt.patient_manager.enums.Role;
@@ -31,6 +30,11 @@ public abstract class BaseService<E extends BaseEntity, R extends BaseRepository
         if (this.currentUserDetailsContainer.getUserDetails() == null)
             throw new UnAuthorizeException();
         return this.currentUserDetailsContainer.getUserDetails();
+    }
+
+
+    private boolean haveCurrentUser() {
+        return this.currentUserDetailsContainer.getUserDetails() == null;
     }
 
     public E save(E entity) {
@@ -98,7 +102,7 @@ public abstract class BaseService<E extends BaseEntity, R extends BaseRepository
     }
 
     private void setCreateUser(E entity) {
-        Long updateUserId = getCurrentUser() == null ? null : getCurrentUser().getUser().getId();
+        Long updateUserId = haveCurrentUser() ? null : getCurrentUser().getUser().getId();
         entity.setCreatedByUserId(updateUserId);
         entity.setUpdatedByUserId(updateUserId);
         entity.setCreatedTime(new Date());
@@ -118,71 +122,20 @@ public abstract class BaseService<E extends BaseEntity, R extends BaseRepository
     @Value("${authorize.enable}")
     private boolean enableAuthorize;
 
-    /**
-     * Throw {@link UnAuthorizeException} if not {@link Role#SYSTEM_ADMIN}
-     */
     public void checkUserAuthorize() {
-        checkUserAuthorize(null, null, null);
+        checkUserAuthorize(null, null);
     }
 
-    /**
-     * Throw {@link UnAuthorizeException} if
-     * - not {@link Role#SYSTEM_ADMIN}
-     * - or an manager of the hospital
-     *
-     * @param hospital the hospital need to check authorize of current user on it
-     */
     public void checkUserAuthorize(Hospital hospital) {
-        checkUserAuthorize(hospital, null, null);
+        checkUserAuthorize(hospital, null);
     }
 
-    /**
-     * Throw {@link UnAuthorizeException} if
-     * - not {@link Role#SYSTEM_ADMIN}
-     * - or a manager of the hospital of the department
-     * - or a manager of the department
-     *
-     * @param department the department need to check authorize of current user on it
-     */
     public void checkUserAuthorize(Department department) {
         Hospital hospital = hospitalService.findById(department.getHospitalId());
         checkUserAuthorize(hospital, department);
     }
 
-    /**
-     * Throw {@link UnAuthorizeException} if
-     * - not {@link Role#SYSTEM_ADMIN}
-     * - or a manager of the hospital of the department
-     * - or a manager of the department
-     *
-     * @param hospital   the hospital contain the department
-     * @param department the department need to check authorize of current user on it
-     *                   <p>
-     *                   use this methor instead of {@link #checkUserAuthorize(Department)} to avoid duplicate query to database
-     */
     public void checkUserAuthorize(Hospital hospital, Department department) {
-        checkUserAuthorize(hospital, department, null);
-    }
-
-
-    /**
-     * Throw {@link UnAuthorizeException} if
-     * - not {@link Role#SYSTEM_ADMIN}
-     * - or a manager of the hospital of the department contain the doctor
-     * - or a manager of the department contain the doctor
-     * - or the doctor itself
-     *
-     * @param department the department contain the doctor
-     * @param doctor     the doctor need to check authorize of current user on it
-     *                   <p>
-     *                   use this methor instead of {@link #checkUserAuthorize(Department)} to avoid duplicate query to database
-     */
-    public void checkUserAuthorize(Department department, Doctor doctor) {
-        Hospital hospital = hospitalService.findById(department.getHospitalId());
-        checkUserAuthorize(hospital, department, doctor);
-    }
-
-    private void checkUserAuthorize(Hospital hospital, Department department, Doctor doctor) {
         if (!enableAuthorize) return;
 
         if (getCurrentUser().hasRole(Role.SYSTEM_ADMIN)) return;
@@ -193,8 +146,6 @@ public abstract class BaseService<E extends BaseEntity, R extends BaseRepository
         if (hospital != null && hospital.manageBy(userId)) return;
 
         if (department != null && department.manageBy(userId)) return;
-
-        if (doctor != null && doctor.getUser().getId().equals(userId)) return;
 
         throw new UnAuthorizeException();
     }

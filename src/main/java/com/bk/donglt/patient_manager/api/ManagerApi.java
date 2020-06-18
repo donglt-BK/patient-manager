@@ -3,11 +3,8 @@ package com.bk.donglt.patient_manager.api;
 import com.bk.donglt.patient_manager.base.BaseResource;
 import com.bk.donglt.patient_manager.dto.department.DepartmentDataDto;
 import com.bk.donglt.patient_manager.dto.department.DepartmentDto;
-import com.bk.donglt.patient_manager.dto.doctor.DoctorDataDto;
-import com.bk.donglt.patient_manager.dto.doctor.DoctorDto;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDataDto;
 import com.bk.donglt.patient_manager.dto.hospital.HospitalDto;
-import com.bk.donglt.patient_manager.entity.Doctor;
 import com.bk.donglt.patient_manager.entity.User;
 import com.bk.donglt.patient_manager.service.manager.ManagerService;
 import org.springframework.data.domain.Page;
@@ -24,18 +21,6 @@ public class ManagerApi extends BaseResource<ManagerService> {
         return ResponseEntity.ok().body(service.findHospitalIdIn());
     }
 
-    @GetMapping("/department/listIn")
-    public ResponseEntity<List<DepartmentDto>> getDepartmentByIds(
-            @RequestParam(name = "hospitalId") Long hospitalId) {
-        return ResponseEntity.ok().body(service.findDepartmentIdIn(hospitalId));
-    }
-
-    @GetMapping("/doctor/findAll")
-    public ResponseEntity<List<Doctor>> findAllDoctor(
-            @RequestParam(name = "departmentId") Long departmentId) {
-        return ResponseEntity.ok().body(service.findAllDoctor(departmentId));
-    }
-    
     @GetMapping("/hospital/list")
     public ResponseEntity<Page<HospitalDto>> getHospital(
             @RequestParam(name = "page", required = false, defaultValue = "1") int page,
@@ -81,6 +66,16 @@ public class ManagerApi extends BaseResource<ManagerService> {
             @RequestParam(name = "size", required = false, defaultValue = "10") int size) {
         return ResponseEntity.ok().body(service.getDepartments(id, getPageable(page, size)));
     }
+    @GetMapping("/department/detail")
+    public ResponseEntity<DepartmentDto> detailDepartment(
+            @RequestParam("id") long id) {
+        return ResponseEntity.ok().body(service.getDetailDepartment(id));
+    }
+    @GetMapping("/department/listIn")
+    public ResponseEntity<List<DepartmentDto>> getDepartmentByIds(
+            @RequestParam(name = "hospitalId") Long hospitalId) {
+        return ResponseEntity.ok().body(service.findDepartmentIdIn(hospitalId));
+    }
 
     @PostMapping("/department/add")
     public ResponseEntity<DepartmentDto> addDepartment(@RequestBody DepartmentDataDto department) {
@@ -111,39 +106,6 @@ public class ManagerApi extends BaseResource<ManagerService> {
             @RequestParam("hospitalId") long hospitalId,
             @RequestParam("departmentId") long departmentId) {
         service.deleteDepartment(hospitalId, departmentId);
-        return ResponseEntity.ok().build();
-    }
-
-    //------------------------------------------------------------------------------------------------------------------
-    @GetMapping("/doctor/list")
-    public ResponseEntity<Page<DoctorDto>> getDoctor(
-            @RequestParam("departmentId") long id,
-            @RequestParam(name = "page", required = false, defaultValue = "1") int page,
-            @RequestParam(name = "size", required = false, defaultValue = "10") int size) {
-        return ResponseEntity.ok().body(service.getDoctors(id, getPageable(page, size)));
-    }
-    @GetMapping("/doctor/getAllDoctorId")
-    public ResponseEntity<List<Long>> getAllDoctorId(@RequestParam("departmentId") long id) {
-        return ResponseEntity.ok().body(service.getAllDoctorId(id));
-    }
-    @PostMapping("/doctor/add")
-    public ResponseEntity<DoctorDto> addDoctor(
-            @RequestParam("departmentId") long departmentId,
-            @RequestParam("userId") long userId
-            ) {
-        return ResponseEntity.ok().body(service.addDoctor(departmentId, userId));
-    }
-
-    @PostMapping("/doctor/update")
-    public ResponseEntity<DoctorDto> updateDoctor(@RequestBody DoctorDataDto update) {
-        return ResponseEntity.ok().body(service.updateDoctor(update));
-    }
-
-    @PostMapping("/doctor/delete")
-    public ResponseEntity<Void> deleteDoctor(
-            @RequestParam("departmentId") long departmentId,
-            @RequestParam("doctorId") long doctorId) {
-        service.deleteDoctor(departmentId, doctorId);
         return ResponseEntity.ok().build();
     }
 }

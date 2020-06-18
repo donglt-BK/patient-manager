@@ -3,6 +3,7 @@ package com.bk.donglt.patient_manager.service.address;
 import com.bk.donglt.patient_manager.base.BaseService;
 import com.bk.donglt.patient_manager.dto.AddressDto;
 import com.bk.donglt.patient_manager.entity.address.*;
+import com.bk.donglt.patient_manager.exception.BadRequestException;
 import com.bk.donglt.patient_manager.repository.address.BlockRepository;
 import com.bk.donglt.patient_manager.repository.address.CityRepository;
 import com.bk.donglt.patient_manager.repository.address.CountryRepository;
@@ -40,10 +41,14 @@ public class AddressService extends BaseService<Block, BlockRepository> {
 
     public Address build(AddressDto addressDto) {
         if (addressDto == null) return null;
-        Block block = findById(addressDto.getBlockId());
         Address address = new Address();
-        address.setBlock(block);
         address.setSpecificAddress(addressDto.getSpecificAddress());
+        try {
+            Block block = findById(addressDto.getBlockId());
+            address.setBlock(block);
+        } catch (BadRequestException ignored) {
+
+        }
         return address;
     }
 }

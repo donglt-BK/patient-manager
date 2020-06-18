@@ -12,5 +12,6 @@ public class DepartmentDataDto {
     private String name;
     private String description;
     private Status status;
+    private String image;
 
 }
