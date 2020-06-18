@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -91,7 +92,8 @@ public class AppointmentService extends BaseService<Appointment, AppointmentRepo
         return repository.findBySchedule_DepartmentIdAndIsDeletedFalse(departmentId, pageable);
     }
 
-    public Appointment book(long scheduleId, Long doctorId) {
+    @Transactional
+    public Appointment book(long scheduleId) {
         Appointment appointment = new Appointment();
         appointment.setUser(userService.findById(getCurrentUser().getUser().getId()));
 
@@ -101,27 +103,9 @@ public class AppointmentService extends BaseService<Appointment, AppointmentRepo
             throw new BadRequestException("Schedule is full");
         scheduleStatusService.increase(scheduleStatus);
         appointment.setSchedule(schedule);
+        appointment.setPos(scheduleStatus.getPos());
 
-        /*if (doctorId != null) {
-            if (!schedule.contain(doctorId))
-                throw new BadRequestException("Doctor not working in this schedule");
-
-            DoctorScheduleStatus doctorScheduleStatus = doctorScheduleStatusService.findByScheduleIdAndDoctorId(scheduleId, doctorId);
-            if (schedule.getDoctorLimit() == doctorScheduleStatus.getCurrentBook())
-                throw new BadRequestException("Doctor schedule is full");
-            doctorScheduleStatusService.increase(doctorScheduleStatus);
-            appointment.setDoctor(doctorService.findById(doctorId));
-        }*/
         return save(appointment);
-    }
-
-    public Appointment receive(long appointmentId) {
-        Appointment appointment = findById(appointmentId);
-        Doctor doctor = doctorService.findMeInDepartment(appointment.getSchedule().getDepartmentId());
-        if (!doctor.getId().equals(appointment.getDoctor().getId()))
-            throw new UnAuthorizeException();
-        appointment.setReceived(true);
-        return update(appointment);
     }
 
     public Appointment cancel(long appointmentId) {

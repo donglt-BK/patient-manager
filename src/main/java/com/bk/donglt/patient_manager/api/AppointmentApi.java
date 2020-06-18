@@ -63,11 +63,8 @@ public class AppointmentApi extends BaseResource<AppointmentService> {
 
     @PostMapping("/book")
     public ResponseEntity<Appointment> booking(
-            @RequestParam("scheduleId") long scheduleId,
-            @RequestParam(name = "doctorId", required = false) Long doctorId) {
-        return ResponseEntity.ok().body(
-                service.book(scheduleId, doctorId)
-        );
+            @RequestParam("scheduleId") long scheduleId) {
+        return ResponseEntity.ok().body(service.book(scheduleId));
     }
 
     @PostMapping("/receive")

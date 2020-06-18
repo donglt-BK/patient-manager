@@ -14,9 +14,11 @@ import javax.persistence.Table;
 public class ScheduleStatus extends BaseEntity {
     private Long scheduleId;
     private int currentBook;
+    private int pos;
 
     public void increase() {
         currentBook++;
+        pos++;
     }
 
     public void decrease() {
