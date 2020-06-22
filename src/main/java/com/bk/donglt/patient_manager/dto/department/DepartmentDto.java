@@ -31,6 +31,7 @@ public class DepartmentDto {
         hospitalId = hospital.getId();
         hospitalName = hospital.getName();
         status = department.getStatus();
+        image = department.getImage();
 
         if (department.getManagers() != null) {
             managers = new ArrayList<>(department.getManagers());
