@@ -1,9 +1,12 @@
 spring:
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/patient_manager
-    username: dongltbk
-    password: donglt
+#    url: jdbc:mysql://localhost:3306/patient_manager
+#    username: dongltbk
+#    password: donglt
+    url: jdbc:mysql://remotemysql.com:3306/3aCvpDfgNS
+    username: 3aCvpDfgNS
+    password: nznVk8wptu
   liquibase:
     enabled: true
     change-log: classpath:/db/changelog/db-changelog-master.xml
